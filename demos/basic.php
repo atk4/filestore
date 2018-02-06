@@ -23,7 +23,8 @@ class Friend extends \atk4\data\Model {
         parent::init();
 
         $this->addField('name'); // friend's name
-        $this->addField('file_id', new \atk4\filestore\Field\File($this->app->filesystem)); // storing file here
+        $this->addField('file', new \atk4\filestore\Field\File($this->app->filesystem)); // storing file here
+        $this->addField('file2', new \atk4\filestore\Field\File($this->app->filesystem)); // storing file here
         //$this->hasOne('file_id', new \atk4\filestore\Model\File());
     }
 }
@@ -35,3 +36,5 @@ $form->setModel(new Friend($app->db));
 $form->model->tryLoad(1);
 
 $col->addColumn()->add('CRUD')->setModel(new \atk4\filestore\Model\File($app->db));
+
+$app->add('CRUD')->setModel(new Friend($app->db));

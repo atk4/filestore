@@ -64,6 +64,12 @@ class File extends \atk4\data\Field_SQL
                 }
             }
         });
+        $this->owner->addHook('beforeDelete', function($m) {
+            $token = $m[$this->short_name];
+            if ($token) {
+                $m->refModel($this->short_name)->loadBy('token', $token)->delete();
+            }
+        });
     }
 
     function importFields()
