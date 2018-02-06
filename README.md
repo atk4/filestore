@@ -46,12 +46,14 @@ Currently the following features are implemented:
 
 # Roadmap
 
-We would like to add more features:
+We have the following ideas for the up-coming version. If you would like to help us implement (or sponsor) any of the features below, please contact @romaninsh (https://gitter.im/atk4/atk4):
 
 -   Ability to specify which extensions and/or file types to accept.
 -   Easy to download file, that was previously uploaded.
 -   Add automatic thumbnail creation. Delete thumbnails together with original image.
 -   Specify custom actions for Upload, Link, Unlink and Delete.
+-   Display icon for file type or preview for image
+-   Add interactive cropping.
 -   Add method to verify file.
 -   Add drag&drop uploading.
 -   Add new View for a big drop-target or use arbitrary view (upload without form).
