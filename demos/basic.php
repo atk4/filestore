@@ -35,6 +35,10 @@ $form = $col->addColumn()->add('Form');
 $form->setModel(new Friend($app->db));
 $form->model->tryLoad(1);
 
-$col->addColumn()->add('CRUD')->setModel(new \atk4\filestore\Model\File($app->db));
+$gr = $col->addColumn()->add(['Grid', 'menu'=>false, 'paginator'=>false]);
+$gr->setModel(new \atk4\filestore\Model\File($app->db));
+$col->js(true, new \atk4\ui\jsExpression('setInterval(function() { []; }, 2000)', [$gr->jsReload()]));
+
+$app->add(['ui'=>'divider']);
 
 $app->add('CRUD')->setModel(new Friend($app->db));
