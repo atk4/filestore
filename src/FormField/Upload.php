@@ -11,6 +11,15 @@ class Upload extends \atk4\ui\FormField\Upload
 
         $this->onUpload([$this, 'uploaded']);
         $this->onDelete([$this, 'deleted']);
+
+    }
+
+    public function renderView()
+    {
+        if ($this->field->fieldFilename) {
+           $this->set($this->field->get(), $this->field->fieldFilename->get());
+        }
+        return parent::renderView();
     }
 
     public function uploaded($file)
@@ -46,8 +55,9 @@ class Upload extends \atk4\ui\FormField\Upload
         $this->setFileId($f['token']);
     }
 
-    public  function deleted()
+    public  function deleted($token)
     {
+        return new \atk4\ui\jsNotify(['content' => $token.' has been removed!', 'color' => 'green']);
     }
 }
 

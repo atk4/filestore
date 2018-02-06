@@ -4,7 +4,7 @@
 
 namespace atk4\filestore\Field;
 
-class File extends \atk4\data\Field
+class File extends \atk4\data\Field_SQL
 {
     use \atk4\core\InitializerTrait {
         init as _init;
@@ -23,10 +23,16 @@ class File extends \atk4\data\Field
      *
      * @var string
      */
-    public $local_file = null;
-
+    public $localField = null;
 
     public $flysystem = null;
+
+    public $normalizedField = null;
+
+    public $reference;
+
+    public $fieldFilename;
+    public $fieldURL;
 
     public function init()
     {
@@ -34,25 +40,37 @@ class File extends \atk4\data\Field
 
         if (!$this->model) {
             $this->model = new \atk4\filestore\Model\File($this->owner->persistence);
+            $this->model->flysystem = $this->flysystem;
         }
 
-        $this->typecast = [
-            false,
-            function ($v, $f, $p) {
-                if ($p instanceof \atk4\ui\Persistence\UI) {
+        $this->normalizedField = preg_replace('/_id$/', '', $this->short_name);
+        $this->reference = $this->owner->hasOne($this->short_name, [$this->model, 'their_field'=>'token']);
 
-                    if (substr($v, 0, 6) == 'token-') {
-                        // nice, token is passed in!
-                        $this->model->unload();
-                        $this->model->loadBy('token', $v);
-                        return $this->model->id;
-                    }
+        $this->importFields();
 
-                    return $v;
+        $this->owner->addHook('beforeSave', function($m) {
+            if ($m->isDirty($this->short_name)) {
+                $old = $m->dirty[$this->short_name];
+                $new = $m[$this->short_name];
+
+                // remove old file, we don't need it
+                if($old) {
+                    $m->refModel($this->short_name)->loadBy('token', $old)->delete();
                 }
-                return null;
-            },
-        ];
+
+                // mark new file as linked
+                if($new) {
+                    $m->refModel($this->short_name)->loadBy('token', $new)->save(['status'=>'linked']);
+                }
+            }
+        });
+    }
+
+    function importFields()
+    {
+        //$this->reference->addField($this->normalizedField.'_token', 'token');
+        $this->fieldURL = $this->reference->addField($this->normalizedField.'_url', 'url');
+        $this->fieldFilename = $this->reference->addField($this->normalizedField.'_filename', 'meta_filename');
     }
 
 

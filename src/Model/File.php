@@ -7,6 +7,8 @@ class File extends \atk4\data\Model {
 
     public $title_field = 'meta_filename';
 
+    public $flysystem = null;
+
 
     function init()
     {
@@ -18,7 +20,7 @@ class File extends \atk4\data\Model {
         $this->addField('storage');
         $this->hasOne('source_file_id', new self());
 
-        $this->addField('status', ['enum'=>['draft','uploaded','thumbok','normalok','ready','linked']]);
+        $this->addField('status', ['enum'=>['draft','uploaded','thumbok','normalok','ready','linked'], 'default'=>'draft']);
 
         $this->addField('meta_filename');
         $this->addField('meta_extension');
@@ -28,6 +30,12 @@ class File extends \atk4\data\Model {
         $this->addField('meta_is_image', ['type'=>'boolean']);
         $this->addField('meta_image_width', ['type'=>'integer']);
         $this->addField('meta_image_height', ['type'=>'integer']);
+
+        $this->addHook('beforeDelete', function($m) {
+            if ($m->flysystem) {
+                $m->flysystem->delete($m['location']);
+            }
+        });
     }
 
     public function newFile()

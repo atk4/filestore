@@ -6,6 +6,7 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
 
 $app = new \atk4\ui\App('Filestore Demo');
+$app->cdn['atk'] = '../public';
 $app->initLayout('Centered');
 
 // change this as needed
@@ -23,6 +24,7 @@ class Friend extends \atk4\data\Model {
 
         $this->addField('name'); // friend's name
         $this->addField('file_id', new \atk4\filestore\Field\File($this->app->filesystem)); // storing file here
+        //$this->hasOne('file_id', new \atk4\filestore\Model\File());
     }
 }
 
