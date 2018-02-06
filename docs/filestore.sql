@@ -16,4 +16,4 @@ CREATE TABLE `filestore_file` (
   `meta_image_height` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `file_token` (`token`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

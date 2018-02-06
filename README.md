@@ -18,11 +18,11 @@ Files can be uploaded directly in your CRUD and you can have several file fields
 
 ![upload1](docs/images/crud.png) 
 
-In your main file you need just to store file token, but if you are using SQL, you can have instant access to additional fields such as public URL (not supported with Local storage), name of original file or more:
+In your main table you only need one `varchar` field to store file token. If you use SQL, you can have instant access to additional fields such as public URL (if available), name of original file or more:
 
 ![upload1](docs/images/refs.png)
 
-This is especially valuable if you need to incorporate your images on the Friend lister.
+This is especially valuable if you need to incorporate all these fields on your custom template.
 
 # Installation and Code
 
