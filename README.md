@@ -4,9 +4,9 @@ Starting from Version 1.4 of ATK UI, it adds support for File and Image uploads.
 
 ## Introduction
 
-When using "Upload" or "Image" field it appears on a form like this:![upload1](docs/images/upload1.png) 
+![upload1](docs/images/demo.gif) 
 
-ATK Form submits using AJAX event, so file upload will take place as soot as the file is selected:![upload2](docs/images/upload2.png)
+ATK Form submits using AJAX event, so file upload will take place as soon as the file is selected. There are however some conditions, when file uploaded/deleted and form is not submitted. 
 
 On successful completion, PHP-side callback is executed to generate **ID**. **Filestore** provides this callback and performs the following actions:
 
