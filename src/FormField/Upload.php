@@ -57,7 +57,15 @@ class Upload extends \atk4\ui\FormField\Upload
 
     public  function deleted($token)
     {
-        return new \atk4\ui\jsNotify(['content' => $token.' has been removed!', 'color' => 'green']);
+        $f = $this->field->model;
+        $f->tryLoadBy('token', $token);
+
+        $js =  new \atk4\ui\jsNotify(['content' => $f['meta_filename'].' has been removed!', 'color' => 'green']);
+        if ($f['status'] == 'draft') {
+            $f->delete();
+        }
+
+        return $js;
     }
 }
 
