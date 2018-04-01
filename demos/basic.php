@@ -6,7 +6,6 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
 
 $app = new \atk4\ui\App('Filestore Demo');
-$app->cdn['atk'] = '../public';
 $app->initLayout('Centered');
 
 // change this as needed
