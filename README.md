@@ -34,6 +34,13 @@ $this->addField('file', new \atk4\filestore\Field\File($this->app->filesystem));
 
 This pretty much takes care of everything! For full example see file `demos/basic.php`.
 
+While there are no releases of this repo, please add this in your composer.json file:
+
+``` json
+  "minimum-stability": "dev",
+  "prefer-stable": false,  
+```
+
 # Features
 
 Currently the following features are implemented:
