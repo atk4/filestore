@@ -14,7 +14,7 @@ class File extends \atk4\data\Model {
     {
         parent::init();
 
-        $this->addField('token', ['system'=>true]);
+        $this->addField('token', ['system'=>true, 'type' => 'string']);
         $this->addField('location');
         $this->addField('url');
         $this->addField('storage');
