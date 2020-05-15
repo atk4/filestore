@@ -48,35 +48,35 @@ class File extends \atk4\data\Field_SQL
 
         $this->importFields();
 
-        $this->owner->addHook('beforeSave', function($m) {
-            if ($m->isDirty($this->short_name)) {
-                $old = $m->dirty[$this->short_name];
-                $new = $m[$this->short_name];
+        $this->owner->onHook('beforeSave', function ($model) {
+            if ($model->isDirty($this->short_name)) {
+                $old = $model->dirty[$this->short_name];
+                $new = $model[$this->short_name];
 
                 // remove old file, we don't need it
-                if($old) {
-                    $m->refModel($this->short_name)->loadBy('token', $old)->delete();
+                if ($old) {
+                    $model->refModel($this->short_name)->loadBy('token', $old)->delete();
                 }
 
                 // mark new file as linked
-                if($new) {
-                    $m->refModel($this->short_name)->loadBy('token', $new)->save(['status'=>'linked']);
+                if ($new) {
+                    $model->refModel($this->short_name)->loadBy('token', $new)->save(['status' => 'linked']);
                 }
             }
         });
-        $this->owner->addHook('beforeDelete', function($m) {
-            $token = $m[$this->short_name];
+        $this->owner->onHook('beforeDelete', function ($model) {
+            $token = $model[$this->short_name];
             if ($token) {
-                $m->refModel($this->short_name)->loadBy('token', $token)->delete();
+                $model->refModel($this->short_name)->loadBy('token', $token)->delete();
             }
         });
     }
 
-    function importFields()
+    public function importFields()
     {
         //$this->reference->addField($this->normalizedField.'_token', 'token');
-        $this->fieldURL = $this->reference->addField($this->normalizedField.'_url', 'url');
-        $this->fieldFilename = $this->reference->addField($this->normalizedField.'_filename', 'meta_filename');
+        $this->fieldURL = $this->reference->addField($this->normalizedField . '_url', 'url');
+        $this->fieldFilename = $this->reference->addField($this->normalizedField . '_filename', 'meta_filename');
     }
 
     function __construct(\League\Flysystem\Filesystem $flysystem) {

@@ -9,8 +9,7 @@ class File extends \atk4\data\Model {
 
     public $flysystem = null;
 
-
-    function init(): void
+    public function init(): void
     {
         parent::init();
 
@@ -31,9 +30,9 @@ class File extends \atk4\data\Model {
         $this->addField('meta_image_width', ['type'=>'integer']);
         $this->addField('meta_image_height', ['type'=>'integer']);
 
-        $this->addHook('beforeDelete', function($m) {
-            if ($m->flysystem) {
-                $m->flysystem->delete($m['location']);
+        $this->onHook('beforeDelete', function ($model) {
+            if ($model->flysystem) {
+                $model->flysystem->delete($model['location']);
             }
         });
     }
