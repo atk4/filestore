@@ -34,7 +34,7 @@ class File extends \atk4\data\Field_SQL
     public $fieldFilename;
     public $fieldURL;
 
-    public function init()
+    public function init(): void
     {
         $this->_init();
 
@@ -78,9 +78,6 @@ class File extends \atk4\data\Field_SQL
         $this->fieldURL = $this->reference->addField($this->normalizedField.'_url', 'url');
         $this->fieldFilename = $this->reference->addField($this->normalizedField.'_filename', 'meta_filename');
     }
-
-
-
 
     function __construct(\League\Flysystem\Filesystem $flysystem) {
         $this->flysystem = $flysystem;
