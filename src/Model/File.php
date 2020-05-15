@@ -10,11 +10,11 @@ class File extends \atk4\data\Model {
     public $flysystem = null;
 
 
-    function init()
+    function init(): void
     {
         parent::init();
 
-        $this->addField('token', ['system'=>true, 'type' => 'string']);
+        $this->addField('token', ['system'=>true]);
         $this->addField('location');
         $this->addField('url');
         $this->addField('storage');
