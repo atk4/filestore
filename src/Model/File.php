@@ -3,7 +3,6 @@
 namespace atk4\filestore\Model;
 
 use atk4\data\Model;
-use atk4\data\UserAction\Generic;
 
 class File extends Model
 {
@@ -17,7 +16,7 @@ class File extends Model
     {
         parent::init();
 
-        $this->addField('token', ['system'=>true, 'type' => 'string']);
+        $this->addField('token', ['system' => true, 'type' => 'string']);
         $this->addField('location');
         $this->addField('url');
         $this->addField('storage');
@@ -49,8 +48,8 @@ class File extends Model
         $this['location'] = uniqid('file-');
     }
 
-    public function download() {
-
+    public function download()
+    {
         $stream = $this->flysystem->readStream($this->get('location'));
 
         if ($this->persistence->app !== null) {

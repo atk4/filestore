@@ -10,29 +10,33 @@ class File extends \atk4\data\Field_SQL
         init as _init;
     }
 
-
-    public $ui = ['form'=>'\atk4\filestore\FormField\Upload'];
+    public $ui = ['form' => '\atk4\filestore\FormField\Upload'];
 
     /**
-     * Set a custom model for File
+     * Set a custom model for File.
      */
-    public $model = null;
+    public $model;
 
     /**
-     * Will contain path of the file while it's stored locally
+     * Will contain path of the file while it's stored locally.
      *
      * @var string
      */
-    public $localField = null;
+    public $localField;
 
-    public $flysystem = null;
+    public $flysystem;
 
-    public $normalizedField = null;
+    public $normalizedField;
 
     public $reference;
 
     public $fieldFilename;
     public $fieldURL;
+
+    public function __construct(\League\Flysystem\Filesystem $flysystem)
+    {
+        $this->flysystem = $flysystem;
+    }
 
     public function init(): void
     {
@@ -77,9 +81,5 @@ class File extends \atk4\data\Field_SQL
         //$this->reference->addField($this->normalizedField.'_token', 'token');
         $this->fieldURL = $this->reference->addField($this->normalizedField . '_url', 'url');
         $this->fieldFilename = $this->reference->addField($this->normalizedField . '_filename', 'meta_filename');
-    }
-
-    function __construct(\League\Flysystem\Filesystem $flysystem) {
-        $this->flysystem = $flysystem;
     }
 }
