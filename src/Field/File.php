@@ -44,7 +44,7 @@ class File extends \atk4\data\Field_SQL
         }
 
         $this->normalizedField = preg_replace('/_id$/', '', $this->short_name);
-        $this->reference = $this->owner->hasOne($this->short_name, [$this->model, 'their_field'=>'token']);
+        $this->reference = $this->owner->hasOne($this->short_name, [$this->model, 'their_field' => 'token']);
 
         $this->importFields();
 
