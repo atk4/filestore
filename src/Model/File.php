@@ -2,17 +2,15 @@
 
 namespace atk4\filestore\Model;
 
-use atk4\data\Model;
-
-class File extends Model
-{
+class File extends \atk4\data\Model {
     public $table = 'filestore_file';
 
     public $title_field = 'meta_filename';
 
-    public $flysystem;
+    public $flysystem = null;
 
-    public function init(): void
+
+    function init(): void
     {
         parent::init();
 
