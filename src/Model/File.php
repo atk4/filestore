@@ -44,4 +44,39 @@ class File extends \atk4\data\Model {
         $this['token'] = uniqid('token-');
         $this['location'] = uniqid('file-');
     }
+
+    public function download() {
+
+        $stream = $this->flysystem->readStream($this->get('location'));
+
+        if ($this->persistence->app !== null) {
+            $contents = stream_get_contents($stream);
+            fclose($stream);
+
+            $this->persistence->app->terminate($contents, [
+                'Content-Description' => 'File Transfer',
+                'Content-Type' => 'application/octet-stream',
+                'Cache-Control' => 'must-revalidate',
+                'Expires' => '-1',
+                'Content-Disposition' => 'attachment; filename="' . $this->get('meta_filename') . '"',
+                'Content-Length' => $this->get('meta_size'),
+                'Pragma' => 'public',
+                'Accept-Ranges' => 'bytes',
+            ]);
+
+            return; // not needed
+        }
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Cache-Control: must-revalidate');
+        header('Expires: -1');
+        header('Content-Disposition: attachment; filename="' . $this->get('meta_filename') . '"');
+        header('Content-Length: ' . $this->get('meta_size'));
+        header('Pragma: public');
+        header('Accept-Ranges: bytes');
+
+        fpassthru($stream);
+        exit;
+    }
 }
