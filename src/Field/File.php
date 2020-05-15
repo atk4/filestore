@@ -82,9 +82,4 @@ class File extends \atk4\data\Field_SQL
     function __construct(\League\Flysystem\Filesystem $flysystem) {
         $this->flysystem = $flysystem;
     }
-
-    public function normalize($value)
-    {
-        return parent::normalize($value);
-    }
 }
