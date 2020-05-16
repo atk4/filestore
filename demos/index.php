@@ -48,13 +48,14 @@ $form = \atk4\ui\Form::addTo($col->addColumn());
 $form->setModel(new Friend($app->db));
 $form->model->tryLoad(1);
 
-$gr = \atk4\ui\Grid::addTo(
-    $col->addColumn(),
-    ['menu' => false, 'paginator' => false]
-);
+$gr = \atk4\ui\Grid::addTo($col->addColumn(), ['menu' => false, 'paginator' => false]);
 $gr->setModel(new \atk4\filestore\Model\File($app->db));
-//$col->js(true, new jsExpression('setInterval(function() { []; }, 2000)', [$gr->jsReload()]));
 
+// this lines are to show how the logic behind works
+$form->getField('file')->on('change', $gr->jsReload());
+$form->getField('file')->on('click', '.remove.icon', $gr->jsReload());
+$form->getField('file2')->on('change', $gr->jsReload());
+$form->getField('file2')->on('click', '.remove.icon', $gr->jsReload());
 $form->onSubmit(function ($f) use ($gr) {
     $f->model->save();
 
@@ -75,8 +76,8 @@ $callback->set(function () use ($crud) {
 });
 
 $crud->addActionButton(
-    [null, 'icon' => 'download'],
+    ['icon' => 'download'],
     new jsExpression(
-        'document.location = "' . $callback->getJSURL() . '&row_id="+' . $crud->table->jsRow()->data('id')->jsRender()
-    )
-);
+    'document.location = "' . $callback->getJSURL() . '&row_id="+[]',
+    [$crud->table->jsRow()->data('id')]
+));
