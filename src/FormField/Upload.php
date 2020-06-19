@@ -6,7 +6,7 @@ class Upload extends \atk4\ui\FormField\Upload
 
     public $model = null; // File model
 
-    function init() {
+    function init(): void {
         parent::init();
 
         $this->onUpload([$this, 'uploaded']);

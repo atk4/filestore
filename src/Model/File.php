@@ -10,7 +10,7 @@ class File extends \atk4\data\Model {
     public $flysystem = null;
 
 
-    function init()
+    function init(): void
     {
         parent::init();
 
