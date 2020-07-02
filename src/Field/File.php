@@ -48,7 +48,7 @@ class File extends \atk4\data\Field_SQL
 
         $this->importFields();
 
-        $this->owner->addHook('beforeSave', function($m) {
+        $this->owner->onHook(Model::HOOK_BEFORE_SAVE, function($m) {
             if ($m->isDirty($this->short_name)) {
                 $old = $m->dirty[$this->short_name];
                 $new = $m[$this->short_name];
@@ -64,7 +64,7 @@ class File extends \atk4\data\Field_SQL
                 }
             }
         });
-        $this->owner->addHook('beforeDelete', function($m) {
+            $this->owner->onHook(Model::HOOK_BEFORE_DELETE, function($m) {
             $token = $m[$this->short_name];
             if ($token) {
                 $m->refModel($this->short_name)->loadBy('token', $token)->delete();
