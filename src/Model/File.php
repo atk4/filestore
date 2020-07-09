@@ -32,6 +32,7 @@ class File extends \atk4\data\Model {
         $this->addField('meta_image_height', ['type'=>'integer']);
 
         $this->onHook(\atk4\data\Model::HOOK_BEFORE_DELETE, function($m) {
+
             if ($m->flysystem) {
                 $m->flysystem->delete($m->get('location'));
             }

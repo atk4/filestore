@@ -66,6 +66,7 @@ class File extends \atk4\data\FieldSQL
         });
             $this->owner->onHook(\atk4\data\Model::HOOK_BEFORE_DELETE, function($m) {
             $token = $m->get($this->short_name);
+
             if ($token) {
                 $m->refModel($this->short_name)->loadBy('token', $token)->delete();
             }
