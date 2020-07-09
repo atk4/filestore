@@ -4,14 +4,14 @@
 
 namespace atk4\filestore\Field;
 
-class File extends \atk4\data\Field_SQL
+class File extends \atk4\data\FieldSQL
 {
     use \atk4\core\InitializerTrait {
         init as _init;
     }
 
 
-    public $ui = ['form'=>'\atk4\filestore\FormField\Upload'];
+    public $ui = ['form'=>'\atk4\filestore\Form\Control\Upload'];
 
     /**
      * Set a custom model for File
@@ -48,10 +48,10 @@ class File extends \atk4\data\Field_SQL
 
         $this->importFields();
 
-        $this->owner->addHook('beforeSave', function($m) {
+        $this->owner->onHook(\atk4\data\Model::HOOK_BEFORE_SAVE, function($m) {
             if ($m->isDirty($this->short_name)) {
                 $old = $m->dirty[$this->short_name];
-                $new = $m[$this->short_name];
+                $new = $m->get($this->short_name);
 
                 // remove old file, we don't need it
                 if($old) {
@@ -64,8 +64,8 @@ class File extends \atk4\data\Field_SQL
                 }
             }
         });
-        $this->owner->addHook('beforeDelete', function($m) {
-            $token = $m[$this->short_name];
+            $this->owner->onHook(\atk4\data\Model::HOOK_BEFORE_DELETE, function($m) {
+            $token = $m->get($this->short_name);
             if ($token) {
                 $m->refModel($this->short_name)->loadBy('token', $token)->delete();
             }
@@ -78,9 +78,6 @@ class File extends \atk4\data\Field_SQL
         $this->fieldURL = $this->reference->addField($this->normalizedField.'_url', 'url');
         $this->fieldFilename = $this->reference->addField($this->normalizedField.'_filename', 'meta_filename');
     }
-
-
-
 
     function __construct(\League\Flysystem\Filesystem $flysystem) {
         $this->flysystem = $flysystem;
