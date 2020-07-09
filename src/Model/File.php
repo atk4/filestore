@@ -33,7 +33,7 @@ class File extends \atk4\data\Model {
 
         $this->onHook(\atk4\data\Model::HOOK_BEFORE_SAVE, function($m) {
             if ($m->flysystem) {
-                $m->flysystem->delete($m['location']);
+                $m->flysystem->delete($m->get('location'));
             }
         });
     }
@@ -42,7 +42,7 @@ class File extends \atk4\data\Model {
     {
         $this->unload();
 
-        $this['token'] = uniqid('token-');
-        $this['location'] = uniqid('file-');
+        $this->set('token', uniqid('token-'));
+        $this->set('location', uniqid('file-'));
     }
 }
