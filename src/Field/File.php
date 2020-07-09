@@ -4,7 +4,7 @@
 
 namespace atk4\filestore\Field;
 
-class File extends \atk4\data\Field_SQL
+class File extends \atk4\data\FieldSQL
 {
     use \atk4\core\InitializerTrait {
         init as _init;
