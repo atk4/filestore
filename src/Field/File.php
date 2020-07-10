@@ -11,7 +11,7 @@ class File extends \atk4\data\FieldSql
     }
 
 
-    public $ui = ['form' => ['\atk4\filestore\Form\Control\Upload::class']];
+    public $ui = ['form' => [\atk4\filestore\Form\Control\Upload::class]];
 
     /**
      * Set a custom model for File
