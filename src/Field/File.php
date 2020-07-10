@@ -4,14 +4,14 @@
 
 namespace atk4\filestore\Field;
 
-class File extends \atk4\data\FieldSQL
+class File extends \atk4\data\FieldSql
 {
     use \atk4\core\InitializerTrait {
         init as _init;
     }
 
 
-    public $ui = [['form'=>'\atk4\filestore\Form\Control\Upload']];
+    public $ui = ['form' => ['\atk4\filestore\Form\Control\Upload']];
 
     /**
      * Set a custom model for File

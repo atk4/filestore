@@ -10,7 +10,7 @@ class Upload extends \atk4\ui\Form\Control\Upload
         parent::init();
 
         $this->onUpload(function ($files) {
-            $this->uploaded($files); 
+            $this->uploaded($file); 
         });
         $this->onDelete(function ($token) {
             $this->deleted($token);
@@ -66,7 +66,7 @@ class Upload extends \atk4\ui\Form\Control\Upload
         $f = $this->field->model;
         $f->tryLoadBy('token', $token);
 
-        $js =  new \atk4\ui\jsNotify(['content' => $f->get('meta_filename').' has been removed!', 'color' => 'green']);
+        $js =  new \atk4\ui\JsNotify(['content' => $f->get('meta_filename').' has been removed!', 'color' => 'green']);
         if ($f->get('status') == 'draft') {
             $f->delete();
         }
