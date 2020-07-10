@@ -10,7 +10,7 @@ class Upload extends \atk4\ui\Form\Control\Upload
         parent::init();
 
         $this->onUpload(function ($files) {
-            $this->uploaded($file); 
+            $this->uploaded($files); 
         });
         $this->onDelete(function ($token) {
             $this->deleted($token);
