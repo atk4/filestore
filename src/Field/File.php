@@ -4,14 +4,14 @@
 
 namespace atk4\filestore\Field;
 
-class File extends \atk4\data\Field_SQL
+class File extends \atk4\data\FieldSql
 {
     use \atk4\core\InitializerTrait {
         init as _init;
     }
 
 
-    public $ui = ['form'=>'\atk4\filestore\FormField\Upload'];
+    public $ui = ['form' => [\atk4\filestore\Form\Control\Upload::class]];
 
     /**
      * Set a custom model for File
@@ -51,7 +51,7 @@ class File extends \atk4\data\Field_SQL
         $this->owner->onHook(\atk4\data\Model::HOOK_BEFORE_SAVE, function($m) {
             if ($m->isDirty($this->short_name)) {
                 $old = $m->dirty[$this->short_name];
-                $new = $m[$this->short_name];
+                $new = $m->get($this->short_name);
 
                 // remove old file, we don't need it
                 if($old) {
@@ -65,7 +65,7 @@ class File extends \atk4\data\Field_SQL
             }
         });
             $this->owner->onHook(\atk4\data\Model::HOOK_BEFORE_DELETE, function($m) {
-            $token = $m[$this->short_name];
+            $token = $m->get($this->short_name);
             if ($token) {
                 $m->refModel($this->short_name)->loadBy('token', $token)->delete();
             }
