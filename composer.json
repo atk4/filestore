@@ -15,8 +15,8 @@
         }
     ],
     "require": {
-        "atk4/ui": "*",
-        "php": ">=5.6.0",
+        "atk4/ui": "2.4.0",
+        "php": ">=7.2",
         "league/flysystem": "^1.0"
     },
     "require-dev": {
@@ -28,7 +28,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-          "atk4\\filestore\\tests\\":"tests/"
+          "Atk4\\Filestore\\Tests\\":"tests/"
         }
     }
 }
