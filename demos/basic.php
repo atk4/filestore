@@ -1,43 +1,103 @@
 <?php
 
-require'../vendor/autoload.php';
+declare(strict_types=1);
 
-use League\Flysystem\Filesystem;
+require '../vendor/autoload.php';
+
+use Atk4\Filestore\Field\File;
+use Atk4\Filestore\Helper;
+use Atk4\Ui\Callback;
+use Atk4\Ui\Columns;
+use Atk4\Ui\Form;
+use Atk4\Ui\JsExpression;
 use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
 
-$app = new \atk4\ui\App('Filestore Demo');
-$app->initLayout('Centered');
+$app = new \Atk4\Ui\App('Filestore Demo');
+$app->initLayout([\Atk4\Ui\Layout\Centered::class]);
 
 // change this as needed
-$app->dbConnect('mysql://root:root@localhost/atk4');
+$app->db = Atk4\Data\Persistence::connect('mysql://root:root@localhost/atk4_filestore');
 
 // specify folder where files will be actually stored
-$adapter = new Local(__DIR__.'/localfiles');
-$app->filesystem = new Filesystem($adapter);
+$adapter = new Local(__DIR__ . '/localfiles');
+$filesystem = new Filesystem($adapter);
 
-class Friend extends \atk4\data\Model {
+class Friend extends \Atk4\Data\Model
+{
     public $table = 'friend';
 
-    function init() {
+    public $filesystem;
+
+    protected function init(): void
+    {
         parent::init();
 
-        $this->addField('name'); // friend's name
-        $this->addField('file', new \atk4\filestore\Field\File($this->app->filesystem)); // storing file here
-        $this->addField('file2', new \atk4\filestore\Field\File($this->app->filesystem)); // storing file here
-        //$this->hasOne('file_id', new \atk4\filestore\Model\File());
+        $this->addField('name');                                                     // friend's name
+        $this->addField('file', new File($this->filesystem));  // storing file here
+        $this->addField('file2', new File($this->filesystem)); // storing file here
     }
 }
 
-$col = $app->add('Columns');
+$col = Columns::addTo($app);
 
-$form = $col->addColumn()->add('Form');
-$form->setModel(new Friend($app->db));
+$form = Form::addTo($col->addColumn());
+$form->setModel(
+    new Friend($app->db, [
+        'filesystem' => $filesystem,
+    ])
+);
 $form->model->tryLoad(1);
 
-$gr = $col->addColumn()->add(['Grid', 'menu'=>false, 'paginator'=>false]);
-$gr->setModel(new \atk4\filestore\Model\File($app->db));
-$col->js(true, new \atk4\ui\jsExpression('setInterval(function() { []; }, 2000)', [$gr->jsReload()]));
+$gr = \Atk4\Ui\Grid::addTo($col->addColumn(), [
+    'menu' => false,
+    'paginator' => false,
+]);
+$gr->setModel(new \Atk4\Filestore\Model\File($app->db));
 
-$app->add(['ui'=>'divider']);
+$form->onSubmit(function (Atk4\Ui\Form $form) use ($gr) {
+    $form->model->save();
 
-$app->add('CRUD')->setModel(new Friend($app->db));
+    return [
+        $gr->jsReload(),
+    ];
+});
+
+\Atk4\Ui\View::addTo($app, ['ui' => 'divider']);
+
+$crud = \Atk4\Ui\Crud::addTo($app);
+$crud->setModel(new Friend($app->db, ['filesystem' => $filesystem]));
+
+\Atk4\Ui\View::addTo($app, ['ui' => 'divider']);
+
+$callback_download = Callback::addTo($app);
+$callback_download->set(function () use ($crud) {
+    $id = $crud->getApp()->stickyGet('row_id');
+    $model = (clone $crud->model);
+    $model_file = $model->load($id)->ref('file');
+    Helper::download($model_file, $crud->getApp());
+});
+
+$crud->addActionButton(
+    ['icon' => 'download'],
+    new JsExpression(
+        'document.location = "' . $callback_download->getJSURL() . '&row_id="+[]',
+        [$crud->table->jsRow()->data('id')]
+    )
+);
+
+$callback_view = Callback::addTo($app);
+$callback_view->set(function () use ($crud) {
+    $id = $crud->getApp()->stickyGet('row_id');
+    $model = (clone $crud->model);
+    $model_file = $model->load($id)->ref('file');
+    Helper::view($model_file, $crud->getApp());
+});
+
+$crud->addActionButton(
+    ['icon' => 'image'],
+    new JsExpression(
+        'document.location = "' . $callback_view->getJSURL() . '&row_id="+[]',
+        [$crud->table->jsRow()->data('id')]
+    )
+);

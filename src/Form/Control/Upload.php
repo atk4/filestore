@@ -1,41 +1,40 @@
 <?php
-namespace atk4\filestore\Form\Control;
 
-class Upload extends \atk4\ui\Form\Control\Upload 
+declare(strict_types=1);
+
+namespace Atk4\Filestore\Form\Control;
+
+use Atk4\Filestore\Field\File;
+
+class Upload extends \Atk4\Ui\Form\Control\Upload
 {
+    /**
+     * @var File
+     */
+    public $field;
 
-    public $model = null; // File model
+    /**
+     * @var \Atk4\Filestore\Model\File
+     */
+    public $model; // File model
 
-    function init(): void {
+    protected function init(): void
+    {
         parent::init();
 
-        $this->onUpload(function ($files) {
-            $this->uploaded($files); 
-        });
-        $this->onDelete(function ($token) {
-            $this->deleted($token);
-        });
-
+        $this->onUpload(\Closure::fromCallable([$this, 'uploaded']));
+        $this->onDelete(\Closure::fromCallable([$this, 'deleted']));
     }
 
-    protected function renderView(): void
+    protected function uploaded($file)
     {
-        if ($this->field->fieldFilename) {
-           $this->set($this->field->get(), $this->field->fieldFilename->get());
-        }
-        parent::renderView();
-    }
-
-    public function uploaded($file)
-    {
-       
         // provision a new file for specified flysystem
         $f = $this->field->model;
         $f->newFile($this->field->flysystem);
 
         // add (or upload) the file
         $stream = fopen($file['tmp_name'], 'r+');
-        $this->field->flysystem->writeStream($f->get('location'), $stream, ['visibility'=>'public']);
+        $this->field->flysystem->writeStream($f->get('location'), $stream, ['visibility' => 'public']);
         if (is_resource($stream)) {
             fclose($stream);
         }
@@ -45,7 +44,7 @@ class Upload extends \atk4\ui\Form\Control\Upload
 
         // store meta-information
         $is = getimagesize($file['tmp_name']);
-        if($f->set('meta_is_image', (boolean)$is)){
+        if ($f->set('meta_is_image', (bool) $is)) {
             $f->set('meta_mime_type', $is['mime']);
             $f->set('meta_image_width', $is[0]);
             $f->set('meta_image_height', $is[1]);
@@ -55,23 +54,28 @@ class Upload extends \atk4\ui\Form\Control\Upload
         $f->set('meta_filename', $file['name']);
         $f->set('meta_size', $file['size']);
 
-
         $f->save();
         $this->setFileId($f->get('token'));
- 
     }
 
-    public  function deleted($token)
+    protected function deleted($token)
     {
         $f = $this->field->model;
         $f->tryLoadBy('token', $token);
 
-        $js =  new \atk4\ui\JsNotify(['content' => $f->get('meta_filename').' has been removed!', 'color' => 'green']);
-        if ($f->get('status') == 'draft') {
+        $js = new \Atk4\Ui\JsNotify(['content' => $f->get('meta_filename') . ' has been removed!', 'color' => 'green']);
+        if ($f->get('status') === 'draft') {
             $f->delete();
         }
 
         return $js;
     }
-}
 
+    protected function renderView(): void
+    {
+        if ($this->field->fieldFilename) {
+            $this->set($this->field->get(), $this->field->fieldFilename->get());
+        }
+        parent::renderView();
+    }
+}
