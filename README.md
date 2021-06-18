@@ -38,7 +38,7 @@ To install run `composer require atk4\filestore` and you will need to create `fi
 of your model, you simply need to declare a new field:
 
 ``` php
-$this->addField('file', new \atk4\filestore\Field\File($this->app->filesystem)); 
+$this->addField('file', new \Atk4\Filestore\Field\File($this->app->filesystem)); 
 ```
 
 This pretty much takes care of everything! For full example see file `demos/basic.php`.
@@ -96,7 +96,7 @@ If you have a Model such as `Friend` and you wish to upload friend's photo, File
 
 ```php
 // in Friend::init();
-$this->addField('file_id', new \atk4\filestore\Field\File());
+$this->addField('file_id', new \Atk4\Filestore\Field\File());
 ```
 
 This field will automatically appear on the form as an upload field, but in the database will be storing "id" from the "
@@ -107,7 +107,7 @@ field:
 
 ``` php
 $this->addField('file_id', [
-  new \atk4\filestore\Field\File(),
+  new \Atk4\Filestore\Field\File(),
   // specify if you want to only accept certain types of files or extensions.
   'onlyTypes' => ['image/*', 'application/x-pdf'],
   'onlyExtensions' => ['img', 'png', 'pdf'],  // safer to specify both
@@ -136,12 +136,12 @@ however, if the file was removed, it will be also deleted from the storage and f
 
 ## Image
 
-Filestore also implements `\atk4\filestore\Field\Image` class which offers additional features by extending File to
+Filestore also implements `\Atk4\Filestore\Field\Image` class which offers additional features by extending File to
 automatically crop and store various thumbnails for an image.
 
 ``` php
 $this->addField('picture_id', [
-  new \atk4\filestore\Field\Image(),
+  new \Atk4\Filestore\Field\Image(),
 
   // no need to specify types, will only accept valid images
   
@@ -175,7 +175,7 @@ In order to store thumbnails, filestore will create additional file(s) inside `F
 
 ## File model
 
-Filestore comes with a custom Model `atk4\filestore\Model\File`, which is designed to store file meta-information. For
+Filestore comes with a custom Model `Atk4\Filestore\Model\File`, which is designed to store file meta-information. For
 each uploaded file it stores:
 
 - file_token - generated randomly, used on a form to pass back to submission handler
