@@ -8,7 +8,7 @@ namespace Atk4\Filestore\Field;
 
 use Atk4\Core\InitializerTrait;
 use Atk4\Data\FieldSql;
-use atk4\data\Model;
+use Atk4\Data\Model;
 use Atk4\Filestore\Form\Control\Upload;
 use League\Flysystem\Filesystem;
 
