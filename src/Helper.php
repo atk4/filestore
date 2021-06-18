@@ -25,16 +25,27 @@ class Helper
         static::output($model, $headers, $app);
     }
 
-    private static function output(File $model, array $headers, App $app)
+    private static function output(File $model, array $headers, App $app = null)
     {
+        $headers = static::normalizeHeaders($headers);
+
         $location = $model->get('location');
 
         if ($app !== null) {
             $app->terminate($model->flysystem->get($location)->read(), $headers);
         }
 
+        $isCli = \PHP_SAPI === 'cli'; // for phpunit
+
         foreach ($headers as $k => $v) {
-            header($k . ': ' . $v);
+            if (!$isCli) {
+
+                $kCamelCase = preg_replace_callback('~(?<![a-zA-Z])[a-z]~', function ($matches) {
+                    return strtoupper($matches[0]);
+                }, $k);
+
+                header($kCamelCase . ': ' . $v);
+            }
         }
 
         fpassthru($model->flysystem->readStream($location));
@@ -56,5 +67,21 @@ class Helper
         ];
 
         static::output($model, $headers, $app);
+    }
+
+    // copied from Atk4/Ui/App
+    private static function normalizeHeaders(array $headers): array
+    {
+        $res = [];
+        foreach ($headers as $k => $v) {
+            if (is_numeric($k) && ($p = strpos($v, ':')) !== false) {
+                $k = substr($v, 0, $p);
+                $v = substr($v, $p + 1);
+            }
+
+            $res[strtolower(trim($k))] = trim($v);
+        }
+
+        return $res;
     }
 }
