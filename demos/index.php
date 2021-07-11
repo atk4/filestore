@@ -13,6 +13,27 @@ use Atk4\Ui\JsExpression;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 
+class Friend extends \Atk4\Data\Model
+{
+    public $table = 'friend';
+
+    public $filesystem;
+
+    protected function init(): void
+    {
+        parent::init();
+
+        $this->addField('name');                                                     // friend's name
+        $this->addField('file', new File($this->filesystem));  // storing file here
+        $this->addField('file2', new File($this->filesystem)); // storing file here
+    }
+}
+
+// specify folder where files will be actually stored
+$adapter = new \League\Flysystem\Local\LocalFilesystemAdapter(__DIR__ . '/localfiles');
+$filesystem = new Filesystem($adapter);
+
+// init App
 $app = new \Atk4\Ui\App('Filestore Demo');
 $app->initLayout([\Atk4\Ui\Layout\Centered::class]);
 
