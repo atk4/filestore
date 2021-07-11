@@ -3,4 +3,5 @@ docs/build
 /build
 /vendor
 .DS_Store
-demos/localfiles/file-*
+/demos/localfiles/file-*
+/demos/filestore.db
