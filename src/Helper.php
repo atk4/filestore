@@ -32,14 +32,13 @@ class Helper
         $location = $model->get('location');
 
         if ($app !== null) {
-            $app->terminate($model->flysystem->get($location)->read(), $headers);
+            $app->terminate($model->flysystem->read($location), $headers);
         }
 
         $isCli = \PHP_SAPI === 'cli'; // for phpunit
 
         foreach ($headers as $k => $v) {
             if (!$isCli) {
-
                 $kCamelCase = preg_replace_callback('~(?<![a-zA-Z])[a-z]~', function ($matches) {
                     return strtoupper($matches[0]);
                 }, $k);

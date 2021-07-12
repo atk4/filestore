@@ -13,16 +13,6 @@ use Atk4\Ui\JsExpression;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 
-$app = new \Atk4\Ui\App('Filestore Demo');
-$app->initLayout([\Atk4\Ui\Layout\Centered::class]);
-
-// change this as needed
-$app->db = Atk4\Data\Persistence::connect('mysql://root:root@localhost/atk4_filestore');
-
-// specify folder where files will be actually stored
-$adapter = new Local(__DIR__ . '/localfiles');
-$filesystem = new Filesystem($adapter);
-
 class Friend extends \Atk4\Data\Model
 {
     public $table = 'friend';
@@ -38,6 +28,30 @@ class Friend extends \Atk4\Data\Model
         $this->addField('file2', new File($this->filesystem)); // storing file here
     }
 }
+
+// specify folder where files will be actually stored
+$adapter = new \League\Flysystem\Local\LocalFilesystemAdapter(__DIR__ . '/localfiles');
+$filesystem = new Filesystem($adapter);
+
+// init App
+$app = new \Atk4\Ui\App('Filestore Demo');
+$app->initLayout([\Atk4\Ui\Layout\Centered::class]);
+
+// init db
+$db_file = __DIR__ . "/filestore.db";
+$db_file_exists = file_exists($db_file);
+// change this as needed
+$app->db = Atk4\Data\Persistence::connect('sqlite:' . $db_file);
+/*
+if (!$db_file_exists) {
+    (new \Atk4\Schema\Migration(new \Friend($app->db, ['filesystem' => $filesystem,])))
+        ->dropIfExists()
+        ->create();
+    (new \Atk4\Schema\Migration(new \Atk4\Filestore\Model\File($app->db)))
+        ->dropIfExists()
+        ->create();
+}
+*/
 
 $col = Columns::addTo($app);
 

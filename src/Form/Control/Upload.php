@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Atk4\Filestore\Form\Control;
 
 use Atk4\Filestore\Field\File;
+use League\MimeTypeDetection\FinfoMimeTypeDetector;
 
 class Upload extends \Atk4\Ui\Form\Control\Upload
 {
@@ -39,17 +40,19 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
             fclose($stream);
         }
 
+        $detector = new \League\MimeTypeDetection\FinfoMimeTypeDetector();
+
+        $mimeType = $detector->detectMimeTypeFromFile($file['tmp_name']);
         // get meta from browser
-        $f->set('meta_mime_type', $file['type']);
+        $f->set('meta_mime_type', $mimeType);
 
         // store meta-information
         $is = getimagesize($file['tmp_name']);
-        if ($f->set('meta_is_image', (bool) $is)) {
-            $f->set('meta_mime_type', $is['mime']);
+        if ($f->set('meta_is_image', (bool) $is) === true) {
             $f->set('meta_image_width', $is[0]);
             $f->set('meta_image_height', $is[1]);
-            //$m['extension'] = $is['mime'];
         }
+
         $f->set('meta_md5', md5_file($file['tmp_name']));
         $f->set('meta_filename', $file['name']);
         $f->set('meta_size', $file['size']);
