@@ -56,12 +56,11 @@ if (!$db_file_exists) {
 $col = Columns::addTo($app);
 
 $form = Form::addTo($col->addColumn());
-$form->setModel(
-    new Friend($app->db, [
-        'filesystem' => $filesystem,
-    ])
-);
-$form->model->tryLoad(1);
+$model = new Friend($app->db, ['filesystem' => $filesystem,]);
+$entity = $model->tryLoadAny();
+//var_dump($entity);
+    $form->setModel($entity);
+//$form->model->tryLoad(1);
 
 $gr = \Atk4\Ui\Grid::addTo($col->addColumn(), [
     'menu' => false,

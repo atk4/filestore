@@ -31,11 +31,11 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
     {
         // provision a new file for specified flysystem
         $f = $this->field->model;
-        $f->newFile($this->field->flysystem);
+        $entity = $f->newFile($this->field->flysystem);
 
         // add (or upload) the file
         $stream = fopen($file['tmp_name'], 'r+');
-        $this->field->flysystem->writeStream($f->get('location'), $stream, ['visibility' => 'public']);
+        $this->field->flysystem->writeStream($entity->get('location'), $stream, ['visibility' => 'public']);
         if (is_resource($stream)) {
             fclose($stream);
         }
@@ -44,31 +44,31 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
 
         $mimeType = $detector->detectMimeTypeFromFile($file['tmp_name']);
         // get meta from browser
-        $f->set('meta_mime_type', $mimeType);
+        $entity->set('meta_mime_type', $mimeType);
 
         // store meta-information
         $is = getimagesize($file['tmp_name']);
-        if ($f->set('meta_is_image', (bool) $is) === true) {
-            $f->set('meta_image_width', $is[0]);
-            $f->set('meta_image_height', $is[1]);
+        if ($entity->set('meta_is_image', (bool) $is) === true) {
+            $entity->set('meta_image_width', $is[0]);
+            $entity->set('meta_image_height', $is[1]);
         }
 
-        $f->set('meta_md5', md5_file($file['tmp_name']));
-        $f->set('meta_filename', $file['name']);
-        $f->set('meta_size', $file['size']);
+        $entity->set('meta_md5', md5_file($file['tmp_name']));
+        $entity->set('meta_filename', $file['name']);
+        $entity->set('meta_size', $file['size']);
 
-        $f->save();
-        $this->setFileId($f->get('token'));
+        $entity->save();
+        $this->setFileId($entity->get('token'));
     }
 
     protected function deleted($token)
     {
         $f = $this->field->model;
-        $f->tryLoadBy('token', $token);
+        $entity = $f->tryLoadBy('token', $token);
 
-        $js = new \Atk4\Ui\JsNotify(['content' => $f->get('meta_filename') . ' has been removed!', 'color' => 'green']);
-        if ($f->get('status') === 'draft') {
-            $f->delete();
+        $js = new \Atk4\Ui\JsNotify(['content' => $entity->get('meta_filename') . ' has been removed!', 'color' => 'green']);
+        if ($entity->get('status') === 'draft') {
+            $entity->delete();
         }
 
         return $js;
@@ -76,7 +76,7 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
 
     protected function renderView(): void
     {
-        if ($this->field->fieldFilename) {
+        if ($this->field->fieldFilename->field) {
             $this->set($this->field->get(), $this->field->fieldFilename->get());
         }
         parent::renderView();

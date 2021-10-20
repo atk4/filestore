@@ -68,8 +68,8 @@ class File extends FieldSql
         ]);
 
         $this->importFields();
-
-        $this->getOwner()->onHook(Model::HOOK_BEFORE_SAVE, function ($m) {
+        $this->getOwner()->onHook(\Atk4\Data\Model::HOOK_BEFORE_SAVE, function ($m) {
+           
             if ($m->isDirty($this->short_name)) {
                 $old = $m->dirty[$this->short_name];
                 $new = $m->get($this->short_name);
@@ -86,7 +86,7 @@ class File extends FieldSql
             }
         });
 
-        $this->getOwner()->onHook(Model::HOOK_BEFORE_DELETE, function ($m) {
+            $this->getOwner()->onHook(\Atk4\Data\Model::HOOK_BEFORE_DELETE, function ($m) {
             $token = $m->get($this->short_name);
             if ($token) {
                 $m->refModel($this->short_name)->loadBy('token', $token)->delete();
