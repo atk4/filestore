@@ -1,47 +1,46 @@
 {
-  "name": "atk4/filestore",
-  "type": "library",
-  "description": "Integration between ATK UI Form Upload Field and PHP Flysystem",
-  "keywords": [
-    "image",
-    "upload",
-    "filestore",
-    "flysystem",
-    "atk4",
-    "agile",
-    "agile ui",
-    "data",
-    "framework"
-  ],
-  "homepage": "https://github.com/atk4/filestore",
-  "license": "MIT",
-  "minimum-stability": "dev",
-  "prefer-stable": true,
-  "authors": [
-    {
-      "name": "Romans Malinovskis",
-      "email": "romans@agiletoolkit.org",
-      "homepage": "https://nearly.guru/"
-    }
-  ],
-  "require": {
-    "atk4/ui": "~3.0.0",
-    "php": ">=7.2",
-    "league/flysystem": "^2.0"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "<6",
-    "codeclimate/php-test-reporter": "*",
-    "friendsofphp/php-cs-fixer": "^2.17"
-  },
-  "autoload": {
-    "psr-4": {
-      "Atk4\\Filestore\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Atk4\\Filestore\\Tests\\": "tests/"
-    }
-  }
+	"name" : "atk4/filestore",
+	"type" : "library",
+	"description" : "Integration between ATK UI Form Upload Field and PHP Flysystem",
+	"keywords" : [
+		"image",
+		"upload",
+		"filestore",
+		"flysystem",
+		"atk4",
+		"agile",
+		"agile ui",
+		"data",
+		"framework"
+	],
+	"homepage" : "https://github.com/atk4/filestore",
+	"license" : "MIT",
+	"minimum-stability" : "dev",
+	"prefer-stable" : true,
+	"authors" : [{
+			"name" : "Romans Malinovskis",
+			"email" : "romans@agiletoolkit.org",
+			"homepage" : "https://nearly.guru/"
+		}
+	],
+	"require" : {
+		"atk4/ui" : "~3",
+		"php" : ">=7.2",
+		"league/flysystem" : "^2.0"
+	},
+	"require-dev" : {
+		"phpunit/phpunit" : "<6",
+		"codeclimate/php-test-reporter" : "*",
+		"friendsofphp/php-cs-fixer" : "^2.17"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"Atk4\\Filestore\\" : "src/"
+		}
+	},
+	"autoload-dev" : {
+		"psr-4" : {
+			"Atk4\\Filestore\\Tests\\" : "tests/"
+		}
+	}
 }
