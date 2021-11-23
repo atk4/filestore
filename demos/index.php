@@ -21,7 +21,7 @@ $adapter = new \League\Flysystem\Local\LocalFilesystemAdapter(__DIR__ . '/localf
 $filesystem = new Filesystem($adapter);
 
 // init App
-$app = new \Atk4\Ui\App('Filestore Demo');
+$app = new \Atk4\Ui\App(['title' => 'Filestore Demo']);
 $app->initLayout([\Atk4\Ui\Layout\Centered::class]);
 
 // init db
