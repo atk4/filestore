@@ -50,12 +50,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Atk4\\Login\\": "src/"
+            "Atk4\\Filestore\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Atk4\\Login\\Tests\\": "tests/"
+            "Atk4\\Filestore\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "dev",

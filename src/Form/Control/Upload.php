@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Atk4\Filestore\Form\Control;
 
 use Atk4\Filestore\Field\File;
-use League\MimeTypeDetection\FinfoMimeTypeDetector;
 
 class Upload extends \Atk4\Ui\Form\Control\Upload
 {

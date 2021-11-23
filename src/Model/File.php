@@ -23,6 +23,7 @@ class File extends \Atk4\Data\Model
 
         $entity->set('token', uniqid('token-'));
         $entity->set('location', uniqid('file-'));
+
         return $entity;
     }
 
@@ -38,8 +39,10 @@ class File extends \Atk4\Data\Model
             'model' => [self::class],
         ]);
 
-        $this->addField('status',
-            ['enum' => ['draft', 'uploaded', 'thumbok', 'normalok', 'ready', 'linked'], 'default' => 'draft']);
+        $this->addField(
+            'status',
+            ['enum' => ['draft', 'uploaded', 'thumbok', 'normalok', 'ready', 'linked'], 'default' => 'draft']
+        );
 
         $this->addField('meta_filename');
         $this->addField('meta_extension');
