@@ -6,12 +6,13 @@ namespace Atk4\Filestore\Demos;
 
 use Atk4\Data\Model;
 use Atk4\Filestore\Field\File;
+use League\Flysystem\Filesystem;
 
 class Friend extends Model
 {
     public $table = 'friend';
 
-    /** @var TODO */
+    /** @var Filesystem */
     public $filesystem;
 
     protected function init(): void

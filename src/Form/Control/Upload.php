@@ -76,7 +76,7 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
     protected function renderView(): void
     {
         if ($this->field->fieldFilename) {
-            $this->set($this->field->get(), $this->field->fieldFilename->get());
+            $this->set($this->field->get($this->entityField->getEntity()), $this->field->fieldFilename->get($this->entityField->getEntity()));
         }
         parent::renderView();
     }

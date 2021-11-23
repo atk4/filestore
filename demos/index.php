@@ -6,6 +6,7 @@ namespace Atk4\Filestore\Demos;
 
 use Atk4\Filestore\Field\File;
 use Atk4\Filestore\Helper;
+use Atk4\Data\Persistence;
 use Atk4\Ui\Callback;
 use Atk4\Ui\Columns;
 use Atk4\Ui\Form;
@@ -27,7 +28,7 @@ $app->initLayout([\Atk4\Ui\Layout\Centered::class]);
 $db_file = __DIR__ . '/filestore.db';
 $db_file_exists = file_exists($db_file);
 // change this as needed
-$app->db = Atk4\Data\Persistence::connect('sqlite:' . $db_file);
+$app->db = new Persistence\Sql('sqlite:' . $db_file);
 /*
 if (!$db_file_exists) {
     (new \Atk4\Schema\Migrator(new \Friend($app->db, ['filesystem' => $filesystem,])))
@@ -55,7 +56,7 @@ $gr = \Atk4\Ui\Grid::addTo($col->addColumn(), [
 ]);
 $gr->setModel(new \Atk4\Filestore\Model\File($app->db));
 
-$form->onSubmit(function (Atk4\Ui\Form $form) use ($gr) {
+$form->onSubmit(function (Form $form) use ($gr) {
     $form->model->save();
 
     return [
@@ -81,7 +82,7 @@ $callback_download->set(function () use ($crud) {
 $crud->addActionButton(
     ['icon' => 'download'],
     new JsExpression(
-        'document.location = "' . $callback_download->getJSURL() . '&row_id="+[]',
+        'document.location = "' . $callback_download->getJsUrl() . '&row_id="+[]',
         [$crud->table->jsRow()->data('id')]
     )
 );
@@ -97,7 +98,7 @@ $callback_view->set(function () use ($crud) {
 $crud->addActionButton(
     ['icon' => 'image'],
     new JsExpression(
-        'document.location = "' . $callback_view->getJSURL() . '&row_id="+[]',
+        'document.location = "' . $callback_view->getJsUrl() . '&row_id="+[]',
         [$crud->table->jsRow()->data('id')]
     )
 );

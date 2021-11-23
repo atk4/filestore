@@ -25,9 +25,9 @@ class Helper
         static::output($model, $headers, $app);
     }
 
-    private static function output(File $model, array $headers, App $app = null)
+    protected static function output(File $model, array $headers, App $app = null)
     {
-        $headers = static::normalizeHeaders($headers);
+        $headers = self::normalizeHeaders($headers);
 
         $location = $model->get('location');
 

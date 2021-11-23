@@ -7,12 +7,12 @@ declare(strict_types=1);
 namespace Atk4\Filestore\Field;
 
 use Atk4\Core\InitializerTrait;
-use Atk4\Data\FieldSql;
+use Atk4\Data\Field;
 use Atk4\Data\Model;
 use Atk4\Filestore\Form\Control\Upload;
 use League\Flysystem\Filesystem;
 
-class File extends FieldSql
+class File extends Field
 {
     use InitializerTrait {
         init as _init;
