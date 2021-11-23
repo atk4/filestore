@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Atk4\Filestore\Form\Control;
 
+use Atk4\Data\Model;
+use Atk4\Data\Model\EntityFieldPair;
 use Atk4\Filestore\Field\FileField;
 use Atk4\Filestore\Model\File;
 use Atk4\Ui\JsExpressionable;
 
+/**
+ * @property EntityFieldPair<Model, FileField> $entityField
+ */
 class Upload extends \Atk4\Ui\Form\Control\Upload
 {
-    /** @var FileField */
-    public $field;
-
     /** @var File */
     public $model;
 
@@ -27,13 +29,13 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
     protected function uploaded(array $file): void
     {
         // provision a new file for specified flysystem
-        $f = $this->field->model;
-        $f->flysystem = $this->field->flysystem; // TODO not sure if needed
+        $f = $this->entityField->getField()->model;
+        $f->flysystem = $this->entityField->getField()->flysystem; // TODO not sure if needed
         $f->newFile();
 
         // add (or upload) the file
         $stream = fopen($file['tmp_name'], 'r+');
-        $this->field->flysystem->writeStream($f->get('location'), $stream, ['visibility' => 'public']);
+        $this->entityField->getField()->flysystem->writeStream($f->get('location'), $stream, ['visibility' => 'public']);
         if (is_resource($stream)) {
             fclose($stream);
         }
@@ -62,7 +64,7 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
 
     protected function deleted(string $token): JsExpressionable
     {
-        $f = $this->field->model;
+        $f = $this->entityField->getField()->model;
         $f->tryLoadBy('token', $token);
 
         $js = new \Atk4\Ui\JsNotify(['content' => $f->get('meta_filename') . ' has been removed!', 'color' => 'green']);
@@ -75,8 +77,8 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
 
     protected function renderView(): void
     {
-        if ($this->field->fieldFilename) { // @phpstan-ignore-line
-            $this->set($this->field->get($this->entityField->getEntity()), $this->field->fieldFilename->get($this->entityField->getEntity()));
+        if ($this->entityField->getField()->fieldFilename) { // @phpstan-ignore-line
+            $this->set($this->entityField->getField()->get($this->entityField->getEntity()), $this->entityField->getField()->fieldFilename->get($this->entityField->getEntity()));
         }
         parent::renderView();
     }
