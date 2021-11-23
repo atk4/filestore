@@ -19,10 +19,11 @@ class File extends \Atk4\Data\Model
 
     public function newFile()
     {
-        $this->unload();
+        $entity = $this->createEntity();
 
-        $this->set('token', uniqid('token-'));
-        $this->set('location', uniqid('file-'));
+        $entity->set('token', uniqid('token-'));
+        $entity->set('location', uniqid('file-'));
+        return $entity;
     }
 
     protected function init(): void
