@@ -5,18 +5,15 @@ declare(strict_types=1);
 namespace Atk4\Filestore\Form\Control;
 
 use Atk4\Filestore\Field\FileField;
+use Atk4\Filestore\Model\File;
 
 class Upload extends \Atk4\Ui\Form\Control\Upload
 {
-    /**
-     * @var FileField
-     */
+    /** @var FileField */
     public $field;
 
-    /**
-     * @var \Atk4\Filestore\Model\File
-     */
-    public $model; // File model
+    /** @var File */
+    public $model;
 
     protected function init(): void
     {

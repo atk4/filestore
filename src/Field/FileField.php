@@ -9,29 +9,25 @@ namespace Atk4\Filestore\Field;
 use Atk4\Core\InitializerTrait;
 use Atk4\Data\Field;
 use Atk4\Data\Model;
+use Atk4\Filestore\Model\File;
 use Atk4\Filestore\Form\Control\Upload;
 use League\Flysystem\Filesystem;
 
 class FileField extends Field
 {
     use InitializerTrait {
-        init as _init;
+        init as private _init;
     }
 
     public $ui = ['form' => [Upload::class]];
 
-    /**
-     * Set a custom model for File.
-     */
+    /** Set a custom model for File. */
     public $model;
 
-    /**
-     * Will contain path of the file while it's stored locally.
-     *
-     * @var string
-     */
+    /** @var string Will contain path of the file while it's stored locally. */
     public $localField;
 
+    /** @var Filesystem */
     public $flysystem;
 
     public $normalizedField;
@@ -41,23 +37,12 @@ class FileField extends Field
     public $fieldFilename;
     public $fieldURL;
 
-    public function __construct(Filesystem $flysystem)
-    {
-        parent::__construct([]);
-        $this->flysystem = $flysystem;
-    }
-
-    public function normalize($value)
-    {
-        return parent::normalize($value);
-    }
-
     protected function init(): void
     {
         $this->_init();
 
         if (!$this->model) {
-            $this->model = new \Atk4\Filestore\Model\File($this->getOwner()->persistence);
+            $this->model = new File($this->getOwner()->persistence);
             $this->model->flysystem = $this->flysystem;
         }
 

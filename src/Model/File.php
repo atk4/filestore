@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace Atk4\Filestore\Model;
 
+use Atk4\Data\Model;
 use League\Flysystem\Filesystem;
 
-class File extends \Atk4\Data\Model
+class File extends Model
 {
     public $table = 'filestore_file';
 
     public $title_field = 'meta_filename';
 
-    /**
-     * @var Filesystem
-     */
+    /** @var Filesystem */
     public $flysystem;
 
-    public function newFile()
+    public function newFile(): Model
     {
         $entity = $this->createEntity();
 
@@ -53,7 +52,7 @@ class File extends \Atk4\Data\Model
         $this->addField('meta_image_width', ['type' => 'integer']);
         $this->addField('meta_image_height', ['type' => 'integer']);
 
-        $this->onHook(\Atk4\Data\Model::HOOK_BEFORE_DELETE, function ($m) {
+        $this->onHook(Model::HOOK_BEFORE_DELETE, function ($m) {
             if ($m->flysystem) {
                 $m->flysystem->delete($m->get('location'));
             }

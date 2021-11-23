@@ -38,7 +38,7 @@ To install run `composer require atk4\filestore` and you will need to create `fi
 of your model, you simply need to declare a new field:
 
 ``` php
-$this->addField('file', new \Atk4\Filestore\Field\FileField($this->app->filesystem));
+$this->addField('file', [\Atk4\Filestore\Field\FileField::class, 'flysystem' => $this->app->filesystem]);
 ```
 
 This pretty much takes care of everything! For full example see file `demos/basic.php`.
@@ -96,7 +96,7 @@ If you have a Model such as `Friend` and you wish to upload friend's photo, File
 
 ```php
 // in Friend::init();
-$this->addField('file_id', new \Atk4\Filestore\Field\FileField());
+$this->addField('file_id', [\Atk4\Filestore\Field\FileField::class]);
 ```
 
 This field will automatically appear on the form as an upload field, but in the database will be storing "id" from the "
@@ -107,7 +107,7 @@ field:
 
 ``` php
 $this->addField('file_id', [
-  new \Atk4\Filestore\Field\FileField(),
+  \Atk4\Filestore\Field\FileField::class,
   // specify if you want to only accept certain types of files or extensions.
   'onlyTypes' => ['image/*', 'application/x-pdf'],
   'onlyExtensions' => ['img', 'png', 'pdf'],  // safer to specify both

@@ -19,8 +19,8 @@ class Friend extends Model
     {
         parent::init();
 
-        $this->addField('name');                               // friend's name
-        $this->addField('file', new FileField($this->filesystem));  // storing file here
-        $this->addField('file2', new FileField($this->filesystem)); // storing file here
+        $this->addField('name');
+        $this->addField('file', [FileField::class, ['flysystem' => $this->filesystem]]);
+        $this->addField('file2', [FileField::class, ['flysystem' => $this->filesystem]]);
     }
 }
