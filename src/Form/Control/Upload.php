@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Atk4\Filestore\Form\Control;
 
-use Atk4\Filestore\Field\File;
+use Atk4\Filestore\Field\FileField;
 
 class Upload extends \Atk4\Ui\Form\Control\Upload
 {
     /**
-     * @var File
+     * @var FileField
      */
     public $field;
 

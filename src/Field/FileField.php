@@ -12,7 +12,7 @@ use Atk4\Data\Model;
 use Atk4\Filestore\Form\Control\Upload;
 use League\Flysystem\Filesystem;
 
-class File extends Field
+class FileField extends Field
 {
     use InitializerTrait {
         init as _init;

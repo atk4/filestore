@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Atk4\Filestore\Demos;
 
-use Atk4\Filestore\Field\File;
 use Atk4\Filestore\Helper;
 use Atk4\Data\Persistence;
 use Atk4\Ui\Callback;
 use Atk4\Ui\Columns;
 use Atk4\Ui\Form;
 use Atk4\Ui\JsExpression;
+use Atk4\Filestore\Model\File;
 use League\Flysystem\Filesystem;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -31,10 +31,10 @@ $db_file_exists = file_exists($db_file);
 $app->db = new Persistence\Sql('sqlite:' . $db_file);
 /*
 if (!$db_file_exists) {
-    (new \Atk4\Schema\Migrator(new \Friend($app->db, ['filesystem' => $filesystem,])))
+    (new \Atk4\Schema\Migrator(new Friend($app->db, ['filesystem' => $filesystem,])))
         ->dropIfExists()
         ->create();
-    (new \Atk4\Schema\Migrator(new \Atk4\Filestore\Model\File($app->db)))
+    (new \Atk4\Schema\Migrator(new File($app->db)))
         ->dropIfExists()
         ->create();
 }
@@ -54,7 +54,7 @@ $gr = \Atk4\Ui\Grid::addTo($col->addColumn(), [
     'menu' => false,
     'paginator' => false,
 ]);
-$gr->setModel(new \Atk4\Filestore\Model\File($app->db));
+$gr->setModel(new File($app->db));
 
 $form->onSubmit(function (Form $form) use ($gr) {
     $form->model->save();
@@ -75,7 +75,7 @@ $callback_download = Callback::addTo($app);
 $callback_download->set(function () use ($crud) {
     $id = $crud->getApp()->stickyGet('row_id');
     $model = (clone $crud->model);
-    $model_file = $model->load($id)->ref('file');
+    $model_file = File::assertInstanceOf($model->load($id)->ref('file'));
     Helper::download($model_file, $crud->getApp());
 });
 
@@ -91,7 +91,7 @@ $callback_view = Callback::addTo($app);
 $callback_view->set(function () use ($crud) {
     $id = $crud->getApp()->stickyGet('row_id');
     $model = (clone $crud->model);
-    $model_file = $model->load($id)->ref('file');
+    $model_file = File::assertInstanceOf($model->load($id)->ref('file'));
     Helper::view($model_file, $crud->getApp());
 });
 
