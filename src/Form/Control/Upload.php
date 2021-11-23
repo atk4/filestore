@@ -6,6 +6,7 @@ namespace Atk4\Filestore\Form\Control;
 
 use Atk4\Filestore\Field\FileField;
 use Atk4\Filestore\Model\File;
+use Atk4\Ui\JsExpressionable;
 
 class Upload extends \Atk4\Ui\Form\Control\Upload
 {
@@ -23,11 +24,12 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
         $this->onDelete(\Closure::fromCallable([$this, 'deleted']));
     }
 
-    protected function uploaded($file)
+    protected function uploaded(array $file): void
     {
         // provision a new file for specified flysystem
         $f = $this->field->model;
-        $f->newFile($this->field->flysystem);
+        $f->flysystem = $this->field->flysystem; // TODO not sure if needed
+        $f->newFile();
 
         // add (or upload) the file
         $stream = fopen($file['tmp_name'], 'r+');
@@ -43,10 +45,11 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
         $f->set('meta_mime_type', $mimeType);
 
         // store meta-information
-        $is = getimagesize($file['tmp_name']);
-        if ($f->set('meta_is_image', (bool) $is) === true) {
-            $f->set('meta_image_width', $is[0]);
-            $f->set('meta_image_height', $is[1]);
+        $imageSizeArr = getimagesize($file['tmp_name']);
+        $f->set('meta_is_image', $imageSizeArr !== false);
+        if ($imageSizeArr !== false) {
+            $f->set('meta_image_width', $imageSizeArr[0]);
+            $f->set('meta_image_height', $imageSizeArr[1]);
         }
 
         $f->set('meta_md5', md5_file($file['tmp_name']));
@@ -57,7 +60,7 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
         $this->setFileId($f->get('token'));
     }
 
-    protected function deleted($token)
+    protected function deleted(string $token): JsExpressionable
     {
         $f = $this->field->model;
         $f->tryLoadBy('token', $token);
@@ -72,7 +75,7 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
 
     protected function renderView(): void
     {
-        if ($this->field->fieldFilename) {
+        if ($this->field->fieldFilename) { // @phpstan-ignore-line
             $this->set($this->field->get($this->entityField->getEntity()), $this->field->fieldFilename->get($this->entityField->getEntity()));
         }
         parent::renderView();

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Atk4\Filestore\Demos;
 
-use Atk4\Filestore\Helper;
 use Atk4\Data\Persistence;
+use Atk4\Filestore\Helper;
+use Atk4\Filestore\Model\File;
 use Atk4\Ui\Callback;
 use Atk4\Ui\Columns;
 use Atk4\Ui\Form;
 use Atk4\Ui\JsExpression;
-use Atk4\Filestore\Model\File;
 use League\Flysystem\Filesystem;
 
 require __DIR__ . '/../vendor/autoload.php';
