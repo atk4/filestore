@@ -13,8 +13,7 @@ use Atk4\Ui\Form;
 use Atk4\Ui\JsExpression;
 use League\Flysystem\Filesystem;
 
-require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/_includes/Friend.php';
+require __DIR__ . '/init-autoloader.php';
 
 // specify folder where files will be actually stored
 $adapter = new \League\Flysystem\Local\LocalFilesystemAdapter(__DIR__ . '/localfiles');
@@ -25,20 +24,14 @@ $app = new \Atk4\Ui\App(['title' => 'Filestore Demo']);
 $app->initLayout([\Atk4\Ui\Layout\Centered::class]);
 
 // init db
-$db_file = __DIR__ . '/filestore.db';
-$db_file_exists = file_exists($db_file);
-// change this as needed
-$app->db = new Persistence\Sql('sqlite:' . $db_file);
-/*
-if (!$db_file_exists) {
-    (new \Atk4\Schema\Migrator(new Friend($app->db, ['filesystem' => $filesystem,])))
-        ->dropIfExists()
-        ->create();
-    (new \Atk4\Schema\Migrator(new File($app->db)))
-        ->dropIfExists()
-        ->create();
+try {
+    /** @var Persistence\Sql $db */
+    require_once __DIR__ . '/init-db.php';
+    $app->db = $db;
+    unset($db);
+} catch (\Throwable $e) {
+    throw new \Atk4\Ui\Exception('Database error: ' . $e->getMessage());
 }
-*/
 
 $col = Columns::addTo($app);
 
