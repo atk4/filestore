@@ -21,7 +21,7 @@ class File extends Model
         $entity = $this->createEntity();
 
         $entity->set('token', uniqid('token-'));
-        $entity->set('location', uniqid('file-'));
+        $entity->set('location', uniqid('file-') . '.bin');
 
         return $entity;
     }
@@ -30,7 +30,7 @@ class File extends Model
     {
         parent::init();
 
-        $this->addField('token', ['system' => true, 'type' => 'string']);
+        $this->addField('token', ['system' => true, 'type' => 'string', 'required' => true]);
         $this->addField('location');
         $this->addField('url');
         $this->addField('storage');
@@ -52,8 +52,8 @@ class File extends Model
         $this->addField('meta_image_width', ['type' => 'integer']);
         $this->addField('meta_image_height', ['type' => 'integer']);
 
-        $this->onHook(Model::HOOK_BEFORE_DELETE, function ($m) {
-            if ($m->flysystem) {
+        $this->onHook(Model::HOOK_BEFORE_DELETE, function (self $m) {
+            if ($m->flysystem) { // @phpstan-ignore-line
                 $m->flysystem->delete($m->get('location'));
             }
         });

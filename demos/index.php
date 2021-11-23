@@ -15,10 +15,6 @@ use League\Flysystem\Filesystem;
 
 require __DIR__ . '/init-autoloader.php';
 
-// specify folder where files will be actually stored
-$adapter = new \League\Flysystem\Local\LocalFilesystemAdapter(__DIR__ . '/localfiles');
-$filesystem = new Filesystem($adapter);
-
 // init App
 $app = new \Atk4\Ui\App(['title' => 'Filestore Demo']);
 $app->initLayout([\Atk4\Ui\Layout\Centered::class]);
@@ -33,15 +29,18 @@ try {
     throw new \Atk4\Ui\Exception('Database error: ' . $e->getMessage());
 }
 
+// specify folder where files will be actually stored
+$adapter = new \League\Flysystem\Local\LocalFilesystemAdapter(__DIR__ . '/_demo-data/localfiles');
+$filesystem = new Filesystem($adapter);
+
 $col = Columns::addTo($app);
 
 $form = Form::addTo($col->addColumn());
 $form->setModel(
-    new Friend($app->db, [
+    (new Friend($app->db, [
         'filesystem' => $filesystem,
-    ])
+    ]))->tryLoad(1)
 );
-$form->model->tryLoad(1);
 
 $gr = \Atk4\Ui\Grid::addTo($col->addColumn(), [
     'menu' => false,

@@ -23,23 +23,17 @@ class FileField extends Field
     public $ui = ['form' => [Upload::class]];
 
     /** @var File|null */
-    public $model;
-
-    /** @var string Will contain path of the file while it's stored locally. */
-    public $localField;
-
-    /** @var Filesystem */
+    public $fileModel;
+    /** @var Filesystem for fileModel init */
     public $flysystem;
 
     /** @var string */
-    public $normalizedField;
-
+    protected $fieldNameBase;
     /** @var HasOneSql */
     public $reference;
 
     /** @var Field */
     public $fieldFilename;
-
     /** @var Field */
     public $fieldUrl;
 
@@ -47,22 +41,22 @@ class FileField extends Field
     {
         $this->_init();
 
-        if ($this->model === null) {
-            $this->model = new File($this->getOwner()->persistence);
-            $this->model->flysystem = $this->flysystem;
+        if ($this->fileModel === null) {
+            $this->fileModel = new File($this->getOwner()->persistence);
+            $this->fileModel->flysystem = $this->flysystem;
         }
 
-        $this->normalizedField = preg_replace('/_id$/', '', $this->short_name);
+        $this->fieldNameBase = preg_replace('/_id$/', '', $this->short_name);
         $this->reference = HasOneSql::assertInstanceOf($this->getOwner()->hasOne($this->short_name, [
-            'model' => $this->model,
+            'model' => $this->fileModel,
             'their_field' => 'token',
         ]));
 
         $this->importFields();
 
-        $this->getOwner()->onHook(Model::HOOK_BEFORE_SAVE, function ($m) {
+        $this->getOwner()->onHook(Model::HOOK_BEFORE_SAVE, function (Model $m) {
             if ($m->isDirty($this->short_name)) {
-                $old = $m->dirty[$this->short_name];
+                $old = $m->getDirtyRef()[$this->short_name];
                 $new = $m->get($this->short_name);
 
                 // remove old file, we don't need it
@@ -77,7 +71,7 @@ class FileField extends Field
             }
         });
 
-        $this->getOwner()->onHook(Model::HOOK_BEFORE_DELETE, function ($m) {
+        $this->getOwner()->onHook(Model::HOOK_BEFORE_DELETE, function (Model $m) {
             $token = $m->get($this->short_name);
             if ($token) {
                 $m->refModel($this->short_name)->loadBy('token', $token)->delete();
@@ -85,9 +79,9 @@ class FileField extends Field
         });
     }
 
-    public function importFields(): void
+    protected function importFields(): void
     {
-        $this->fieldUrl = $this->reference->addField($this->normalizedField . '_url', 'url');
-        $this->fieldFilename = $this->reference->addField($this->normalizedField . '_filename', 'meta_filename');
+        $this->fieldUrl = $this->reference->addField($this->fieldNameBase . '_url', 'url');
+        $this->fieldFilename = $this->reference->addField($this->fieldNameBase . '_filename', 'meta_filename');
     }
 }

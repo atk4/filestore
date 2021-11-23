@@ -17,5 +17,5 @@ cache
 /demos/db.php
 /demos/_demo-data/db.sqlite
 /demos/_demo-data/db.sqlite-journal
-/demos/localfiles/file-*
+/demos/_demo-data/localfiles/file-*.bin
 /phpunit.xml
