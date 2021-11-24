@@ -75,7 +75,7 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
     {
         if ($this->entityField->getField()->fieldFilename) { // @phpstan-ignore-line
             $this->set(
-                $this->entityField->getField()->get($this->entityField->getEntity()),
+                $this->entityField->get(),
                 $this->entityField->getField()->fieldFilename->get($this->entityField->getEntity())
             );
         }
