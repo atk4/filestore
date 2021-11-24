@@ -38,7 +38,7 @@ To install run `composer require atk4\filestore` and you will need to create `fi
 of your model, you simply need to declare a new field:
 
 ``` php
-$this->addField('file', new \Atk4\Filestore\Field\File($this->app->filesystem)); 
+$this->addField('file', [\Atk4\Filestore\Field\FileField::class, 'flysystem' => $this->app->filesystem]);
 ```
 
 This pretty much takes care of everything! For full example see file `demos/basic.php`.
@@ -96,7 +96,7 @@ If you have a Model such as `Friend` and you wish to upload friend's photo, File
 
 ```php
 // in Friend::init();
-$this->addField('file_id', new \Atk4\Filestore\Field\File());
+$this->addField('file_id', [\Atk4\Filestore\Field\FileField::class]);
 ```
 
 This field will automatically appear on the form as an upload field, but in the database will be storing "id" from the "
@@ -107,26 +107,26 @@ field:
 
 ``` php
 $this->addField('file_id', [
-  new \Atk4\Filestore\Field\File(),
+  \Atk4\Filestore\Field\FileField::class,
   // specify if you want to only accept certain types of files or extensions.
   'onlyTypes' => ['image/*', 'application/x-pdf'],
   'onlyExtensions' => ['img', 'png', 'pdf'],  // safer to specify both
 
   // where to store
   'flysystem' => $flysystem,
-  
+
   // you can also define callback if you wish to do something more with the file
   'onUpload' => function($file_info){ /** do something with file */ },
-  
+
   // this is called when form with the file is submitted
   'onAttach' => function($file){ /** $file is a model object **/ },
-  
+
   // when user detaches file from the related entity
   'onDetach' => function($file){ /** $file is a model object **/ }
-  
+
   // If you define this, this field will be created in your model and will contain url
   'urlField' => 'file_url',
-  
+
 ])
 ```
 
@@ -144,21 +144,21 @@ $this->addField('picture_id', [
   new \Atk4\Filestore\Field\Image(),
 
   // no need to specify types, will only accept valid images
-  
+
   // where to store
   'flysystem' => $flysystem,
-    
+
   // you can still define this if you wish to pre-process your file, e.g. add watermark
   'onUpload' => function($file_info){ /** do something with file */ },
-  
+
   // This will store full-sized image URL. You can disable if you set to: false
   'urlField' => 'picture_url',
-  
+
   // Cropping table
   'crop' => [
     'medium'=> [ 200, 300 ],  // width, height
-    'small' => [ 50, 50 ], 
-  ]  
+    'small' => [ 50, 50 ],
+  ]
 ])
 ```
 

@@ -4,32 +4,33 @@ declare(strict_types=1);
 
 namespace Atk4\Filestore\Model;
 
+use Atk4\Data\Model;
 use League\Flysystem\Filesystem;
 
-class File extends \Atk4\Data\Model
+class File extends Model
 {
     public $table = 'filestore_file';
 
     public $title_field = 'meta_filename';
 
-    /**
-     * @var Filesystem
-     */
+    /** @var Filesystem */
     public $flysystem;
 
-    public function newFile()
+    public function newFile(): Model
     {
-        $this->unload();
+        $entity = $this->createEntity();
 
-        $this->set('token', uniqid('token-'));
-        $this->set('location', uniqid('file-'));
+        $entity->set('token', uniqid('token-'));
+        $entity->set('location', uniqid('file-') . '.bin');
+
+        return $entity;
     }
 
     protected function init(): void
     {
         parent::init();
 
-        $this->addField('token', ['system' => true, 'type' => 'string']);
+        $this->addField('token', ['system' => true, 'type' => 'string', 'required' => true]);
         $this->addField('location');
         $this->addField('url');
         $this->addField('storage');
@@ -37,8 +38,10 @@ class File extends \Atk4\Data\Model
             'model' => [self::class],
         ]);
 
-        $this->addField('status',
-            ['enum' => ['draft', 'uploaded', 'thumbok', 'normalok', 'ready', 'linked'], 'default' => 'draft']);
+        $this->addField(
+            'status',
+            ['enum' => ['draft', 'uploaded', 'thumbok', 'normalok', 'ready', 'linked'], 'default' => 'draft']
+        );
 
         $this->addField('meta_filename');
         $this->addField('meta_extension');
@@ -49,8 +52,8 @@ class File extends \Atk4\Data\Model
         $this->addField('meta_image_width', ['type' => 'integer']);
         $this->addField('meta_image_height', ['type' => 'integer']);
 
-        $this->onHook(\Atk4\Data\Model::HOOK_BEFORE_DELETE, function ($m) {
-            if ($m->flysystem) {
+        $this->onHook(Model::HOOK_BEFORE_DELETE, function (self $m) {
+            if ($m->flysystem) { // @phpstan-ignore-line
                 $m->flysystem->delete($m->get('location'));
             }
         });

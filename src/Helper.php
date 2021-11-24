@@ -9,7 +9,10 @@ use Atk4\Ui\App;
 
 class Helper
 {
-    public static function download(File $model, App $app = null)
+    /**
+     * @return never
+     */
+    public static function download(File $model, App $app = null): void
     {
         $headers = [
             'Content-Description' => 'File Transfer',
@@ -25,9 +28,12 @@ class Helper
         static::output($model, $headers, $app);
     }
 
-    private static function output(File $model, array $headers, App $app = null)
+    /**
+     * @return never
+     */
+    protected static function output(File $model, array $headers, App $app = null): void
     {
-        $headers = static::normalizeHeaders($headers);
+        $headers = self::normalizeHeaders($headers);
 
         $location = $model->get('location');
 
@@ -52,7 +58,10 @@ class Helper
         exit;
     }
 
-    public static function view(File $model, App $app = null)
+    /**
+     * @return never
+     */
+    public static function view(File $model, App $app = null): void
     {
         $headers = [
             'Content-Description' => 'File Transfer',
