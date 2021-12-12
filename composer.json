@@ -1,7 +1,8 @@
 {
     "name": "atk4/filestore",
-    "type": "library",
     "description": "Integration between ATK UI Form Upload Field and PHP Flysystem",
+    "license": "MIT",
+    "type": "library",
     "keywords": [
         "image",
         "upload",
@@ -13,8 +14,6 @@
         "data",
         "framework"
     ],
-    "homepage": "https://github.com/atk4/filestore",
-    "license": "MIT",
     "authors": [
         {
             "name": "Romans Malinovskis",
@@ -26,6 +25,7 @@
             "homepage": "https://mvorisek.cz/"
         }
     ],
+    "homepage": "https://github.com/atk4/filestore",
     "require": {
         "php": ">=7.4 <8.2",
         "atk4/ui": "dev-develop",
@@ -45,9 +45,8 @@
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpunit/phpunit": "^9.5.5"
     },
-    "config": {
-        "sort-packages": true
-    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Atk4\\Filestore\\": "src/"
@@ -58,6 +57,7 @@
             "Atk4\\Filestore\\Tests\\": "tests/"
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "config": {
+        "sort-packages": true
+    }
 }
