@@ -116,13 +116,13 @@ $this->addField('file_id', [
   'flysystem' => $flysystem,
 
   // you can also define callback if you wish to do something more with the file
-  'onUpload' => function($file_info){ /** do something with file */ },
+  'onUpload' => function($file_info) { /** do something with file */ },
 
   // this is called when form with the file is submitted
-  'onAttach' => function($file){ /** $file is a model object **/ },
+  'onAttach' => function($file) { /** $file is a model object **/ },
 
   // when user detaches file from the related entity
-  'onDetach' => function($file){ /** $file is a model object **/ }
+  'onDetach' => function($file) { /** $file is a model object **/ }
 
   // If you define this, this field will be created in your model and will contain url
   'urlField' => 'file_url',
@@ -149,7 +149,7 @@ $this->addField('picture_id', [
   'flysystem' => $flysystem,
 
   // you can still define this if you wish to pre-process your file, e.g. add watermark
-  'onUpload' => function($file_info){ /** do something with file */ },
+  'onUpload' => function($file_info) { /** do something with file */ },
 
   // This will store full-sized image URL. You can disable if you set to: false
   'urlField' => 'picture_url',
