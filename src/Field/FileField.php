@@ -46,8 +46,8 @@ class FileField extends Field
             $this->fileModel->flysystem = $this->flysystem;
         }
 
-        $this->fieldNameBase = preg_replace('/_id$/', '', $this->short_name);
-        $this->reference = HasOneSql::assertInstanceOf($this->getOwner()->hasOne($this->short_name, [
+        $this->fieldNameBase = preg_replace('/_id$/', '', $this->shortName);
+        $this->reference = HasOneSql::assertInstanceOf($this->getOwner()->hasOne($this->shortName, [
             'model' => $this->fileModel,
             'their_field' => 'token',
         ]));
@@ -55,26 +55,26 @@ class FileField extends Field
         $this->importFields();
 
         $this->getOwner()->onHook(Model::HOOK_BEFORE_SAVE, function (Model $m) {
-            if ($m->isDirty($this->short_name)) {
-                $old = $m->getDirtyRef()[$this->short_name];
-                $new = $m->get($this->short_name);
+            if ($m->isDirty($this->shortName)) {
+                $old = $m->getDirtyRef()[$this->shortName];
+                $new = $m->get($this->shortName);
 
                 // remove old file, we don't need it
                 if ($old) {
-                    $m->refModel($this->short_name)->loadBy('token', $old)->delete();
+                    $m->refModel($this->shortName)->loadBy('token', $old)->delete();
                 }
 
                 // mark new file as linked
                 if ($new) {
-                    $m->refModel($this->short_name)->loadBy('token', $new)->save(['status' => 'linked']);
+                    $m->refModel($this->shortName)->loadBy('token', $new)->save(['status' => 'linked']);
                 }
             }
         });
 
         $this->getOwner()->onHook(Model::HOOK_BEFORE_DELETE, function (Model $m) {
-            $token = $m->get($this->short_name);
+            $token = $m->get($this->shortName);
             if ($token) {
-                $m->refModel($this->short_name)->loadBy('token', $token)->delete();
+                $m->refModel($this->shortName)->loadBy('token', $token)->delete();
             }
         });
     }
