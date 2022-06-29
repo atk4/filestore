@@ -42,7 +42,7 @@ class FileField extends Field
         $this->_init();
 
         if ($this->fileModel === null) {
-            $this->fileModel = new File($this->getOwner()->persistence);
+            $this->fileModel = new File($this->getOwner()->getPersistence());
             $this->fileModel->flysystem = $this->flysystem;
         }
 
