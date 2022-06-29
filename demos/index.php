@@ -39,7 +39,7 @@ $form = Form::addTo($col->addColumn());
 $form->setModel(
     (new Friend($app->db, [
         'filesystem' => $filesystem,
-    ]))->tryLoad(1)
+    ]))->createEntity()
 );
 
 $gr = \Atk4\Ui\Grid::addTo($col->addColumn(), [

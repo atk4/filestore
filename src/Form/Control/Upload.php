@@ -61,10 +61,10 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
     protected function deleted(string $token): JsExpressionable
     {
         $model = $this->entityField->getField()->fileModel;
-        $entity = $model->tryLoadBy('token', $token);
+        $entity = $model->loadBy('token', $token);
 
         $js = new \Atk4\Ui\JsNotify(['content' => $entity->get('meta_filename') . ' has been removed!', 'color' => 'green']);
-        if ($entity->isLoaded() && $entity->get('status') === 'draft') {
+        if ($entity->get('status') === 'draft') {
             $entity->delete();
         }
 
