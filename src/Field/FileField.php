@@ -20,7 +20,7 @@ class FileField extends Field
         init as private _init;
     }
 
-    public $ui = ['form' => [Upload::class]];
+    public array $ui = ['form' => [Upload::class]];
 
     /** @var File|null */
     public $fileModel;
@@ -29,9 +29,9 @@ class FileField extends Field
 
     /** @var string */
     protected $fieldNameBase;
+
     /** @var HasOneSql */
     public $reference;
-
     /** @var Field */
     public $fieldFilename;
     /** @var Field */
@@ -46,12 +46,12 @@ class FileField extends Field
             $this->fileModel->flysystem = $this->flysystem;
         }
 
-        $this->fieldNameBase = preg_replace('/_id$/', '', $this->shortName);
         $this->reference = HasOneSql::assertInstanceOf($this->getOwner()->hasOne($this->shortName, [
             'model' => $this->fileModel,
             'their_field' => 'token',
         ]));
 
+        $this->fieldNameBase = preg_replace('/_id$/', '', $this->shortName);
         $this->importFields();
 
         $this->getOwner()->onHook(Model::HOOK_BEFORE_SAVE, function (Model $m) {
