@@ -7,11 +7,10 @@ namespace Atk4\Filestore\Form\Control;
 use Atk4\Data\Model;
 use Atk4\Data\Model\EntityFieldPair;
 use Atk4\Filestore\Field\FileField;
-use Atk4\Filestore\Model\File;
 use Atk4\Ui\JsExpressionable;
 
 /**
- * @property EntityFieldPair<Model, FileField> $entityField
+ * @phpstan-property EntityFieldPair<Model, FileField> $entityField
  */
 class Upload extends \Atk4\Ui\Form\Control\Upload
 {
@@ -23,7 +22,7 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
         $this->onDelete(\Closure::fromCallable([$this, 'deleted']));
     }
 
-    protected function uploaded(array $file): void
+    protected function uploaded(array $file): ?JsExpressionable
     {
         // provision a new file for specified flysystem
         $model = $this->entityField->getField()->fileModel;
@@ -56,19 +55,20 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
 
         $entity->save();
         $this->setFileId($entity->get('token'));
+
+        return null;
     }
 
-    protected function deleted(string $token): JsExpressionable
+    protected function deleted(string $token): ?JsExpressionable
     {
         $model = $this->entityField->getField()->fileModel;
         $entity = $model->loadBy('token', $token);
 
-        $js = new \Atk4\Ui\JsNotify(['content' => $entity->get('meta_filename') . ' has been removed!', 'color' => 'green']);
         if ($entity->get('status') === 'draft') {
             $entity->delete();
         }
 
-        return $js;
+        return null;
     }
 
     protected function renderView(): void
