@@ -146,7 +146,7 @@ automatically crop and store various thumbnails for an image.
 
 ``` php
 $this->addField('picture_id', [
-    new \Atk4\Filestore\Field\Image(),
+    \Atk4\Filestore\Field\Image::class,
 
     // no need to specify types, will only accept valid images
 
