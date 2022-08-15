@@ -48,7 +48,7 @@ class FileField extends Field
 
         $this->reference = HasOneSql::assertInstanceOf($this->getOwner()->hasOne($this->shortName, [
             'model' => $this->fileModel,
-            'their_field' => 'token',
+            'theirField' => 'token',
         ]));
 
         $this->fieldNameBase = preg_replace('/_id$/', '', $this->shortName);
