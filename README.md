@@ -110,7 +110,7 @@ $this->addField('file_id', [
   \Atk4\Filestore\Field\FileField::class,
   // specify if you want to only accept certain types of files or extensions.
   'onlyTypes' => ['image/*', 'application/x-pdf'],
-  'onlyExtensions' => ['img', 'png', 'pdf'],  // safer to specify both
+  'onlyExtensions' => ['img', 'png', 'pdf'], // safer to specify both
 
   // where to store
   'flysystem' => $flysystem,
@@ -126,7 +126,6 @@ $this->addField('file_id', [
 
   // If you define this, this field will be created in your model and will contain url
   'urlField' => 'file_url',
-
 ])
 ```
 
@@ -156,7 +155,7 @@ $this->addField('picture_id', [
 
   // Cropping table
   'crop' => [
-    'medium'=> [ 200, 300 ],  // width, height
+    'medium'=> [ 200, 300 ], // width, height
     'small' => [ 50, 50 ],
   ],
 ])

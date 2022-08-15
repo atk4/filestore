@@ -11,7 +11,7 @@ class File extends Model
 {
     public $table = 'filestore_file';
 
-    public $title_field = 'meta_filename';
+    public ?string $titleField = 'meta_filename';
 
     /** @var Filesystem */
     public $flysystem;
