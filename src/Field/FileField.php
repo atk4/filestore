@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-// vim:ts=4:sw=4:et:fdm=marker:fdl=0
-
 namespace Atk4\Filestore\Field;
 
 use Atk4\Core\InitializerTrait;
