@@ -75,8 +75,8 @@ $callbackDownload->set(function () use ($crud) {
 $crud->addActionButton(
     ['icon' => 'download'],
     new JsExpression(
-        'document.location = "' . $callbackDownload->getJsUrl() . '&row_id="+[]',
-        [$crud->table->jsRow()->data('id')]
+        'document.location = [] + "&row_id=" + []',
+        [$callbackDownload->getJsUrl(), $crud->table->jsRow()->data('id')]
     )
 );
 
@@ -91,7 +91,7 @@ $callbackView->set(function () use ($crud) {
 $crud->addActionButton(
     ['icon' => 'image'],
     new JsExpression(
-        'document.location = "' . $callbackView->getJsUrl() . '&row_id="+[]',
-        [$crud->table->jsRow()->data('id')]
+        'document.location = [] + "&row_id=" + []',
+        [$callbackView->getJsUrl(), $crud->table->jsRow()->data('id')]
     )
 );
