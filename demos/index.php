@@ -11,6 +11,7 @@ use Atk4\Ui\Callback;
 use Atk4\Ui\Columns;
 use Atk4\Ui\Form;
 use Atk4\Ui\JsExpression;
+use Atk4\Ui\View;
 use League\Flysystem\Filesystem;
 
 require __DIR__ . '/init-autoloader.php';
@@ -56,15 +57,15 @@ $form->onSubmit(function (Form $form) use ($gr) {
     ];
 });
 
-\Atk4\Ui\View::addTo($app, ['ui' => 'divider']);
+View::addTo($app, ['ui' => 'divider']);
 
 $crud = \Atk4\Ui\Crud::addTo($app);
 $crud->setModel(new Friend($app->db, ['filesystem' => $filesystem]));
 
-\Atk4\Ui\View::addTo($app, ['ui' => 'divider']);
+View::addTo($app, ['ui' => 'divider']);
 
-$callback_download = Callback::addTo($app);
-$callback_download->set(function () use ($crud) {
+$callbackDownload = Callback::addTo($app);
+$callbackDownload->set(function () use ($crud) {
     $id = $crud->getApp()->stickyGet('row_id');
     $model = (clone $crud->model);
     $model_file = File::assertInstanceOf($model->load($id)->ref('file'));
@@ -74,13 +75,13 @@ $callback_download->set(function () use ($crud) {
 $crud->addActionButton(
     ['icon' => 'download'],
     new JsExpression(
-        'document.location = "' . $callback_download->getJsUrl() . '&row_id="+[]',
-        [$crud->table->jsRow()->data('id')]
+        'document.location = [] + "&row_id=" + []',
+        [$callbackDownload->getJsUrl(), $crud->table->jsRow()->data('id')]
     )
 );
 
-$callback_view = Callback::addTo($app);
-$callback_view->set(function () use ($crud) {
+$callbackView = Callback::addTo($app);
+$callbackView->set(function () use ($crud) {
     $id = $crud->getApp()->stickyGet('row_id');
     $model = (clone $crud->model);
     $model_file = File::assertInstanceOf($model->load($id)->ref('file'));
@@ -90,7 +91,7 @@ $callback_view->set(function () use ($crud) {
 $crud->addActionButton(
     ['icon' => 'image'],
     new JsExpression(
-        'document.location = "' . $callback_view->getJsUrl() . '&row_id="+[]',
-        [$crud->table->jsRow()->data('id')]
+        'document.location = [] + "&row_id=" + []',
+        [$callbackView->getJsUrl(), $crud->table->jsRow()->data('id')]
     )
 );

@@ -29,10 +29,14 @@ class Helper
     }
 
     /**
+     * @param array<string, string> $headers
+     *
      * @return never
      */
     protected static function output(File $model, array $headers, App $app = null): void
     {
+        // TODO move to App and add support for streams
+
         $headers = self::normalizeHeaders($headers);
 
         $location = $model->get('location');
@@ -77,7 +81,13 @@ class Helper
         static::output($model, $headers, $app);
     }
 
-    // copied from Atk4/Ui/App
+    /**
+     * Copied from atk4/ui App class.
+     *
+     * @param array<string, string> $headers
+     *
+     * @return array<string, string>
+     */
     private static function normalizeHeaders(array $headers): array
     {
         $res = [];

@@ -107,25 +107,31 @@ field:
 
 ``` php
 $this->addField('file_id', [
-  \Atk4\Filestore\Field\FileField::class,
-  // specify if you want to only accept certain types of files or extensions.
-  'onlyTypes' => ['image/*', 'application/x-pdf'],
-  'onlyExtensions' => ['img', 'png', 'pdf'], // safer to specify both
+    \Atk4\Filestore\Field\FileField::class,
+    // specify if you want to only accept certain types of files or extensions.
+    'onlyTypes' => ['image/*', 'application/x-pdf'],
+    'onlyExtensions' => ['img', 'png', 'pdf'], // safer to specify both
 
-  // where to store
-  'flysystem' => $flysystem,
+    // where to store
+    'flysystem' => $flysystem,
 
-  // you can also define callback if you wish to do something more with the file
-  'onUpload' => function ($file_info) { /** do something with file */ },
+    // you can also define callback if you wish to do something more with the file
+    'onUpload' => function ($file_info) {
+        // do something with file
+    },
 
-  // this is called when form with the file is submitted
-  'onAttach' => function ($file) { /** $file is a model object **/ },
+    // this is called when form with the file is submitted
+    'onAttach' => function ($file) {
+        // $file is a model object
+    },
 
-  // when user detaches file from the related entity
-  'onDetach' => function ($file) { /** $file is a model object **/ }
+    // when user detaches file from the related entity
+    'onDetach' => function ($file) {
+        // $file is a model object
+    },
 
-  // If you define this, this field will be created in your model and will contain url
-  'urlField' => 'file_url',
+    // If you define this, this field will be created in your model and will contain url
+    'urlField' => 'file_url',
 ])
 ```
 
@@ -140,24 +146,26 @@ automatically crop and store various thumbnails for an image.
 
 ``` php
 $this->addField('picture_id', [
-  new \Atk4\Filestore\Field\Image(),
+    new \Atk4\Filestore\Field\Image(),
 
-  // no need to specify types, will only accept valid images
+    // no need to specify types, will only accept valid images
 
-  // where to store
-  'flysystem' => $flysystem,
+    // where to store
+    'flysystem' => $flysystem,
 
-  // you can still define this if you wish to pre-process your file, e.g. add watermark
-  'onUpload' => function ($file_info) { /** do something with file */ },
+    // you can still define this if you wish to pre-process your file, e.g. add watermark
+    'onUpload' => function ($file_info) {
+        // do something with file
+    },
 
-  // This will store full-sized image URL. You can disable if you set to: false
-  'urlField' => 'picture_url',
+    // This will store full-sized image URL. You can disable if you set to: false
+    'urlField' => 'picture_url',
 
-  // Cropping table
-  'crop' => [
-    'medium'=> [ 200, 300 ], // width, height
-    'small' => [ 50, 50 ],
-  ],
+    // Cropping table
+    'crop' => [
+        'medium'=> [ 200, 300 ], // width, height
+        'small' => [ 50, 50 ],
+    ],
 ])
 ```
 

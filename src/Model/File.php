@@ -38,10 +38,10 @@ class File extends Model
             'model' => [self::class],
         ]);
 
-        $this->addField(
-            'status',
-            ['enum' => ['draft', 'uploaded', 'thumbok', 'normalok', 'ready', 'linked'], 'default' => 'draft']
-        );
+        $this->addField('status', [
+            'enum' => ['draft', 'uploaded', 'thumbok', 'normalok', 'ready', 'linked'],
+            'default' => 'draft',
+        ]);
 
         $this->addField('meta_filename');
         $this->addField('meta_extension');
