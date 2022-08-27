@@ -22,6 +22,9 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
         $this->onDelete(\Closure::fromCallable([$this, 'deleted']));
     }
 
+    /**
+     * @param array<string, mixed> $file
+     */
     protected function uploaded(array $file): ?JsExpressionable
     {
         // provision a new file for specified flysystem
@@ -79,6 +82,7 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
                 $this->entityField->getField()->fieldFilename->get($this->entityField->getEntity())
             );
         }
+
         parent::renderView();
     }
 }
