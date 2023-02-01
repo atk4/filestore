@@ -10,7 +10,7 @@ use Atk4\Filestore\Model\File;
 use Atk4\Ui\Callback;
 use Atk4\Ui\Columns;
 use Atk4\Ui\Form;
-use Atk4\Ui\JsExpression;
+use Atk4\Ui\Js\JsExpression;
 use Atk4\Ui\View;
 use League\Flysystem\Filesystem;
 
@@ -75,7 +75,7 @@ $callbackDownload->set(function () use ($crud) {
 $crud->addActionButton(
     ['icon' => 'download'],
     new JsExpression(
-        'document.location = [] + "&row_id=" + []',
+        'document.location = [] + \'&row_id=\' + []',
         [$callbackDownload->getJsUrl(), $crud->table->jsRow()->data('id')]
     )
 );
@@ -91,7 +91,7 @@ $callbackView->set(function () use ($crud) {
 $crud->addActionButton(
     ['icon' => 'image'],
     new JsExpression(
-        'document.location = [] + "&row_id=" + []',
+        'document.location = [] + \'&row_id=\' + []',
         [$callbackView->getJsUrl(), $crud->table->jsRow()->data('id')]
     )
 );

@@ -92,11 +92,6 @@ class Helper
     {
         $res = [];
         foreach ($headers as $k => $v) {
-            if (is_numeric($k) && ($p = strpos($v, ':')) !== false) {
-                $k = substr($v, 0, $p);
-                $v = substr($v, $p + 1);
-            }
-
             $res[strtolower(trim($k))] = trim($v);
         }
 

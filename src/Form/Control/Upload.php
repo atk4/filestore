@@ -7,7 +7,7 @@ namespace Atk4\Filestore\Form\Control;
 use Atk4\Data\Model;
 use Atk4\Data\Model\EntityFieldPair;
 use Atk4\Filestore\Field\FileField;
-use Atk4\Ui\JsExpressionable;
+use Atk4\Ui\Js\JsExpressionable;
 
 /**
  * @phpstan-property EntityFieldPair<Model, FileField> $entityField

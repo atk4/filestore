@@ -49,7 +49,7 @@ class FileField extends Field
             'theirField' => 'token',
         ]));
 
-        $this->fieldNameBase = preg_replace('/_id$/', '', $this->shortName);
+        $this->fieldNameBase = preg_replace('~_id$~', '', $this->shortName);
         $this->importFields();
 
         $this->getOwner()->onHook(Model::HOOK_BEFORE_SAVE, function (Model $m) {
