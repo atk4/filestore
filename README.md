@@ -38,7 +38,7 @@ To install run `composer require atk4\filestore` and you will need to create `fi
 of your model, you simply need to declare a new field:
 
 ``` php
-$this->addField('file', [\Atk4\Filestore\Field\FileField::class, 'flysystem' => $this->app->filesystem]);
+$this->addField('file', [\Atk4\Filestore\Field\FileField::class, 'flysystem' => $this->getApp()->filesystem]);
 ```
 
 This pretty much takes care of everything! For full example see file `demos/basic.php`.
@@ -116,7 +116,7 @@ $this->addField('file_id', [
     'flysystem' => $flysystem,
 
     // you can also define callback if you wish to do something more with the file
-    'onUpload' => function ($file_info) {
+    'onUpload' => function ($file) {
         // do something with file
     },
 
@@ -154,7 +154,7 @@ $this->addField('picture_id', [
     'flysystem' => $flysystem,
 
     // you can still define this if you wish to pre-process your file, e.g. add watermark
-    'onUpload' => function ($file_info) {
+    'onUpload' => function ($file) {
         // do something with file
     },
 
@@ -163,8 +163,8 @@ $this->addField('picture_id', [
 
     // Cropping table
     'crop' => [
-        'medium'=> [ 200, 300 ], // width, height
-        'small' => [ 50, 50 ],
+        'medium' => [200, 300], // width, height
+        'small' => [50, 50],
     ],
 ])
 ```
@@ -174,8 +174,8 @@ either "imagick" or "gd" for the operation. Arguments are defined like that:
 
 - `0 => 200`, width
 - `1 => height`, height
-- `'type'=>'jpeg'`  optional. Defaults to 'png'
-- `'urlField'=>'custom_url_field'`, optional. Defaults to `picture_medium_url` combined from original field name, key of
+- `'type' => 'jpeg'`  optional. Defaults to 'png'
+- `'urlField' => 'custom_url_field'`, optional. Defaults to `picture_medium_url` combined from original field name, key of
   cropping table item and "_url".
 
 In order to store thumbnails, filestore will create additional file(s) inside `File` table.
