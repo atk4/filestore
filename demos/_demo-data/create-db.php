@@ -19,30 +19,35 @@ unset($sqliteFile);
 /** @var Persistence\Sql $db */
 require_once __DIR__ . '/../init-db.php';
 
-$model = new Model($db, ['table' => 'filestore_file']);
-$model->addField('token', ['required' => true]);
-$model->addField('location', ['type' => 'text']);
-$model->addField('url', ['type' => 'text']);
-$model->addField('storage');
-$model->addField('status');
-$model->addField('source_file_id', ['type' => 'integer']);
-$model->addField('meta_filename');
-$model->addField('meta_extension');
-$model->addField('meta_md5');
-$model->addField('meta_mime_type');
-$model->addField('meta_size', ['type' => 'integer']);
-$model->addField('meta_is_image', ['type' => 'boolean']);
-$model->addField('meta_image_width', ['type' => 'integer']);
-$model->addField('meta_image_height', ['type' => 'integer']);
+$fileModel = new Model($db, ['table' => 'filestore_file']);
+$fileModel->addField('token', ['required' => true]);
+$fileModel->addField('location', ['type' => 'text']);
+$fileModel->addField('url', ['type' => 'text']);
+$fileModel->addField('storage');
+$fileModel->addField('status');
+$fileModel->addField('source_file_id', ['type' => 'integer']);
+$fileModel->addField('meta_filename');
+$fileModel->addField('meta_extension');
+$fileModel->addField('meta_md5');
+$fileModel->addField('meta_mime_type');
+$fileModel->addField('meta_size', ['type' => 'integer']);
+$fileModel->addField('meta_is_image', ['type' => 'boolean']);
+$fileModel->addField('meta_image_width', ['type' => 'integer']);
+$fileModel->addField('meta_image_height', ['type' => 'integer']);
 
-(new Migrator($model))->create();
+(new Migrator($fileModel))->create();
 
-$model = new Model($db, ['table' => 'friend']);
-$model->addField('name', ['required' => true]);
-$model->addField('file_id', ['type' => 'integer']);
-$model->addField('file', ['type' => 'text']);
-$model->addField('file2', ['type' => 'text']);
+$friendModel = new Model($db, ['table' => 'friend']);
+$friendModel->addField('name', ['required' => true]);
+$friendModel->addField('file_id', ['type' => 'integer']);
+$friendModel->addField('file');
+$friendModel->addField('file2');
 
-(new Migrator($model))->create();
+(new Migrator($friendModel))->create();
+
+$friendModel->hasOne('file', ['model' => $fileModel, 'theirField' => 'token']);
+$friendModel->hasOne('file2', ['model' => $fileModel, 'theirField' => 'token']);
+(new Migrator($db))->createForeignKey($friendModel->getReference('file'));
+(new Migrator($db))->createForeignKey($friendModel->getReference('file2'));
 
 echo 'import complete!' . "\n\n";

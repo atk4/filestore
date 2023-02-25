@@ -49,10 +49,17 @@ class FileField extends Field
             'theirField' => 'token',
         ]));
 
+        // TODO https://github.com/atk4/ui/pull/1805
+        $this->onHookToOwnerEntity(Model::HOOK_BEFORE_SAVE, function (Model $m) {
+            if ($m->get($this->shortName) === '') {
+                $m->set($this->shortName, null);
+            }
+        });
+
         $this->fieldNameBase = preg_replace('~_id$~', '', $this->shortName);
         $this->importFields();
 
-        $this->getOwner()->onHook(Model::HOOK_BEFORE_SAVE, function (Model $m) {
+        $this->onHookToOwnerEntity(Model::HOOK_AFTER_SAVE, function (Model $m) {
             if ($m->isDirty($this->shortName)) {
                 $old = $m->getDirtyRef()[$this->shortName];
                 $new = $m->get($this->shortName);
@@ -69,7 +76,7 @@ class FileField extends Field
             }
         });
 
-        $this->getOwner()->onHook(Model::HOOK_BEFORE_DELETE, function (Model $m) {
+        $this->onHookToOwnerEntity(Model::HOOK_AFTER_DELETE, function (Model $m) {
             $token = $m->get($this->shortName);
             if ($token) {
                 $m->refModel($this->shortName)->loadBy('token', $token)->delete();
