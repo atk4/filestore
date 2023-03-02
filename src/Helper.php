@@ -12,7 +12,7 @@ class Helper
     /**
      * @return never
      */
-    public static function download(File $model, App $app = null): void
+    public static function download(File $model, App $app): void
     {
         $headers = [
             'Content-Description' => 'File Transfer',
@@ -33,35 +33,19 @@ class Helper
      *
      * @return never
      */
-    protected static function output(File $model, array $headers, App $app = null): void
+    protected static function output(File $model, array $headers, App $app): void
     {
         $path = $model->get('location');
 
-        if ($app !== null) {
-            $app->terminate($model->flysystem->read($path), $headers);
-        }
-
-        $isCli = \PHP_SAPI === 'cli'; // for phpunit
-
-        foreach ($headers as $k => $v) {
-            if (!$isCli) {
-                $kCamelCase = preg_replace_callback('~(?<![a-zA-Z])[a-z]~', function ($matches) {
-                    return strtoupper($matches[0]);
-                }, $k);
-
-                header($kCamelCase . ': ' . $v);
-            }
-        }
-
-        fpassthru($model->flysystem->readStream($path));
-
-        exit;
+        // TODO support streaming
+        // fpassthru($model->flysystem->readStream($path));
+        $app->terminate($model->flysystem->read($path), $headers);
     }
 
     /**
      * @return never
      */
-    public static function view(File $model, App $app = null): void
+    public static function view(File $model, App $app): void
     {
         $headers = [
             'Content-Description' => 'File Transfer',
