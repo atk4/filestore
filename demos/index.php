@@ -52,9 +52,7 @@ $gr->setModel(new File($app->db));
 $form->onSubmit(function (Form $form) use ($gr) {
     $form->model->save();
 
-    return [
-        $gr->jsReload(),
-    ];
+    return $gr->jsReload();
 });
 
 View::addTo($app, ['ui' => 'divider']);
