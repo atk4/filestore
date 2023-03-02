@@ -14,32 +14,28 @@ class Helper
      */
     public static function download(File $model, App $app): void
     {
-        $headers = [
-            'Content-Description' => 'File Transfer',
-            'Content-Type' => 'application/octet-stream',
-            'Cache-Control' => 'must-revalidate',
-            'Expires' => '-1',
-            'Content-Disposition' => 'attachment; filename="' . $model->get('meta_filename') . '"',
-            'Content-Length' => (string) $model->get('meta_size'),
-            'Pragma' => 'public',
-            'Accept-Ranges' => 'bytes',
-        ];
+        $app->setResponseHeader('Content-Description', 'File Transfer');
+        $app->setResponseHeader('Content-Type', 'application/octet-stream');
+        $app->setResponseHeader('Cache-Control', 'must-revalidate');
+        $app->setResponseHeader('Expires', '-1');
+        $app->setResponseHeader('Content-Disposition', 'attachment; filename="' . $model->get('meta_filename') . '"');
+        $app->setResponseHeader('Content-Length', (string) $model->get('meta_size'));
+        $app->setResponseHeader('Pragma', 'public');
+        $app->setResponseHeader('Accept-Ranges', 'bytes');
 
-        static::output($model, $headers, $app);
+        static::output($model, $app);
     }
 
     /**
-     * @param array<string, string> $headers
-     *
      * @return never
      */
-    protected static function output(File $model, array $headers, App $app): void
+    protected static function output(File $model, App $app): void
     {
         $path = $model->get('location');
 
         // TODO support streaming
         // fpassthru($model->flysystem->readStream($path));
-        $app->terminate($model->flysystem->read($path), $headers);
+        $app->terminate($model->flysystem->read($path));
     }
 
     /**
@@ -47,17 +43,15 @@ class Helper
      */
     public static function view(File $model, App $app): void
     {
-        $headers = [
-            'Content-Description' => 'File Transfer',
-            'Content-Type' => $model->get('meta_mime_type'),
-            'Cache-Control' => 'must-revalidate',
-            'Expires' => '-1',
-            'Content-Disposition' => 'inline; filename="' . $model->get('meta_filename') . '"',
-            'Content-Length' => (string) $model->get('meta_size'),
-            'Pragma' => 'public',
-            'Accept-Ranges' => 'bytes',
-        ];
+        $app->setResponseHeader('Content-Description', 'File Transfer');
+        $app->setResponseHeader('Content-Type', $model->get('meta_mime_type'));
+        $app->setResponseHeader('Cache-Control', 'must-revalidate');
+        $app->setResponseHeader('Expires', '-1');
+        $app->setResponseHeader('Content-Disposition', 'inline; filename="' . $model->get('meta_filename') . '"');
+        $app->setResponseHeader('Content-Length', (string) $model->get('meta_size'));
+        $app->setResponseHeader('Pragma', 'public');
+        $app->setResponseHeader('Accept-Ranges', 'bytes');
 
-        static::output($model, $headers, $app);
+        static::output($model, $app);
     }
 }
