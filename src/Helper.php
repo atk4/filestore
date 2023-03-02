@@ -35,14 +35,10 @@ class Helper
      */
     protected static function output(File $model, array $headers, App $app = null): void
     {
-        // TODO move to App and add support for streams
-
-        $headers = self::normalizeHeaders($headers);
-
-        $location = $model->get('location');
+        $path = $model->get('location');
 
         if ($app !== null) {
-            $app->terminate($model->flysystem->read($location), $headers);
+            $app->terminate($model->flysystem->read($path), $headers);
         }
 
         $isCli = \PHP_SAPI === 'cli'; // for phpunit
@@ -57,7 +53,7 @@ class Helper
             }
         }
 
-        fpassthru($model->flysystem->readStream($location));
+        fpassthru($model->flysystem->readStream($path));
 
         exit;
     }
@@ -79,22 +75,5 @@ class Helper
         ];
 
         static::output($model, $headers, $app);
-    }
-
-    /**
-     * Copied from atk4/ui App class.
-     *
-     * @param array<string, string> $headers
-     *
-     * @return array<string, string>
-     */
-    private static function normalizeHeaders(array $headers): array
-    {
-        $res = [];
-        foreach ($headers as $k => $v) {
-            $res[strtolower(trim($k))] = trim($v);
-        }
-
-        return $res;
     }
 }
