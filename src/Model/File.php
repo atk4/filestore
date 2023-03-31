@@ -13,6 +13,28 @@ class File extends Model
 
     public ?string $titleField = 'meta_filename';
 
+    /** @const string */
+    public const STATUS_DRAFT = 'draft';
+    /** @const string Not implemented */
+    public const STATUS_UPLOADED = 'uploaded';
+    /** @const string Not implemented */
+    public const STATUS_THUMB_OK = 'thumbok';
+    /** @const string Not implemented */
+    public const STATUS_NORMAL_OK = 'normalok';
+    /** @const string Not implemented */
+    public const STATUS_READY = 'ready';
+    /** @const string Not implemented */
+    public const STATUS_LINKED = 'linked';
+    /** @const array */
+    public const ALL_STATUSES = [
+        self::STATUS_DRAFT,
+        self::STATUS_UPLOADED,
+        self::STATUS_THUMB_OK,
+        self::STATUS_NORMAL_OK,
+        self::STATUS_READY,
+        self::STATUS_LINKED,
+    ];
+
     /** @var Filesystem */
     public $flysystem;
 
@@ -39,8 +61,8 @@ class File extends Model
         ]);
 
         $this->addField('status', [
-            'enum' => ['draft', 'uploaded', 'thumbok', 'normalok', 'ready', 'linked'],
-            'default' => 'draft',
+            'enum' => self::ALL_STATUSES,
+            'default' => self::STATUS_DRAFT,
         ]);
 
         $this->addField('meta_filename');

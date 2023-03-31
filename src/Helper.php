@@ -29,40 +29,6 @@ class Helper
     }
 
     /**
-     * @param array<string, string> $headers
-     *
-     * @return never
-     */
-    protected static function output(File $model, array $headers, App $app = null): void
-    {
-        // TODO move to App and add support for streams
-
-        $headers = self::normalizeHeaders($headers);
-
-        $location = $model->get('location');
-
-        if ($app !== null) {
-            $app->terminate($model->flysystem->read($location), $headers);
-        }
-
-        $isCli = \PHP_SAPI === 'cli'; // for phpunit
-
-        foreach ($headers as $k => $v) {
-            if (!$isCli) {
-                $kCamelCase = preg_replace_callback('~(?<![a-zA-Z])[a-z]~', function ($matches) {
-                    return strtoupper($matches[0]);
-                }, $k);
-
-                header($kCamelCase . ': ' . $v);
-            }
-        }
-
-        fpassthru($model->flysystem->readStream($location));
-
-        exit;
-    }
-
-    /**
      * @return never
      */
     public static function view(File $model, App $app = null): void
@@ -82,7 +48,43 @@ class Helper
     }
 
     /**
-     * Copied from atk4/ui App class.
+     * @param array<string, string> $headers
+     *
+     * @return never
+     */
+    protected static function output(File $model, array $headers, App $app = null): void
+    {
+        // TODO move to App and add support for streams
+
+        $location = $model->get('location');
+
+        if ($app !== null) {
+            foreach ($headers as $name => $value) {
+                $app->setResponseHeader($name, $value);
+            }
+            $app->terminate($model->flysystem->read($location));
+        }
+
+        $isCli = \PHP_SAPI === 'cli'; // for phpunit
+
+        $headers = self::normalizeHeaders($headers);
+        foreach ($headers as $name => $value) {
+            if (!$isCli) {
+                $name = preg_replace_callback('~(?<![a-zA-Z])[a-z]~', function ($matches) {
+                    return strtoupper($matches[0]);
+                }, strtolower($name));
+
+                header($name . ': ' . $value);
+            }
+        }
+
+        fpassthru($model->flysystem->readStream($location));
+
+        exit;
+    }
+
+    /**
+     * Copied from atk4/ui App class. Used only if App is not available.
      *
      * @param array<string, string> $headers
      *
