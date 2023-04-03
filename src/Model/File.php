@@ -13,7 +13,7 @@ class File extends Model
 
     public ?string $titleField = 'meta_filename';
 
-    /** @const string */
+    /** @const string All uploaded files first get this status */
     public const STATUS_DRAFT = 'draft';
     /** @const string Not implemented */
     public const STATUS_UPLOADED = 'uploaded';
@@ -23,7 +23,7 @@ class File extends Model
     public const STATUS_NORMAL_OK = 'normalok';
     /** @const string Not implemented */
     public const STATUS_READY = 'ready';
-    /** @const string Not implemented */
+    /** @const string When file is linked to some other model */
     public const STATUS_LINKED = 'linked';
     /** @const array */
     public const ALL_STATUSES = [
@@ -74,10 +74,27 @@ class File extends Model
         $this->addField('meta_image_width', ['type' => 'integer']);
         $this->addField('meta_image_height', ['type' => 'integer']);
 
-        $this->onHook(Model::HOOK_BEFORE_DELETE, function (self $m) {
-            if ($m->flysystem) { // @phpstan-ignore-line
-                $m->flysystem->delete($m->get('location'));
+        $this->onHook(Model::HOOK_AFTER_DELETE, function (self $m) {
+            $path = $m->get('location');
+            if ($path && $m->flysystem && $m->flysystem->fileExists($path)) { // @phpstan-ignore-line
+                $m->flysystem->delete($path);
             }
         });
+    }
+
+    /**
+     * Useful method to clean up all draft files.
+     * Can be called as user action or on schedule bases to clean up filestore repository.
+     *
+     * @return $this
+     */
+    public function cleanupDrafts()
+    {
+        $files = (clone $this->getModel())->addCondition('status', self::STATUS_DRAFT);
+        foreach ($files as $file) {
+            $file->delete();
+        }
+
+        return $this;
     }
 }
