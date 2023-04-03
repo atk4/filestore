@@ -6,6 +6,7 @@ namespace Atk4\Filestore;
 
 use Atk4\Filestore\Model\File;
 use Atk4\Ui\App;
+use Nyholm\Psr7\Stream;
 
 class Helper
 {
@@ -14,8 +15,8 @@ class Helper
      */
     public static function download(File $model, App $app): void
     {
-        $app->setResponseHeader('Content-Description', 'File Transfer');
-        $app->setResponseHeader('Content-Type', 'application/octet-stream');
+        $app->setResponseHeader('Content-Description', 'Download File');
+        $app->setResponseHeader('Content-Type', $model->get('meta_mime_type'));
         $app->setResponseHeader('Cache-Control', 'must-revalidate');
         $app->setResponseHeader('Expires', '-1');
         $app->setResponseHeader('Content-Disposition', 'attachment; filename="' . $model->get('meta_filename') . '"');
@@ -23,7 +24,7 @@ class Helper
         $app->setResponseHeader('Pragma', 'public');
         $app->setResponseHeader('Accept-Ranges', 'bytes');
 
-        static::output($model, $app);
+        static::output($model, $app, true);
     }
 
     /**
@@ -31,7 +32,7 @@ class Helper
      */
     public static function view(File $model, App $app): void
     {
-        $app->setResponseHeader('Content-Description', 'File Transfer');
+        $app->setResponseHeader('Content-Description', 'View File');
         $app->setResponseHeader('Content-Type', $model->get('meta_mime_type'));
         $app->setResponseHeader('Cache-Control', 'must-revalidate');
         $app->setResponseHeader('Expires', '-1');
@@ -40,18 +41,28 @@ class Helper
         $app->setResponseHeader('Pragma', 'public');
         $app->setResponseHeader('Accept-Ranges', 'bytes');
 
-        static::output($model, $app);
+        static::output($model, $app, true);
     }
 
     /**
      * @return never
      */
-    protected static function output(File $model, App $app): void
+    protected static function output(File $model, App $app, bool $streamOutput = false): void
     {
         $path = $model->get('location');
 
-        // TODO support streaming
-        // fpassthru($model->flysystem->readStream($path));
-        $app->terminate($model->flysystem->read($path));
+        if ($streamOutput) {
+            $resource = $model->flysystem->readStream($path);
+            $stream = Stream::create($resource);
+            $app->getResponse()->withBody($stream);
+
+            // @todo
+            // 1. in App->outputResponse it overwrites stream?
+            // 2. in same method i guess we have to add if ($this->response->getBody()->isWritable()) for write()
+            // 3. but also that do not help - it still streams empty response for some reason even if in stream there is data
+            $app->terminate();
+        } else {
+            $app->terminate($model->flysystem->read($path));
+        }
     }
 }
