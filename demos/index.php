@@ -62,17 +62,16 @@ $c2 = $col->addColumn()->setStyle('border', '1px solid gray');
 
 Header::addTo($c2, ['All Filestore Files']);
 $gr = \Atk4\Ui\Crud::addTo($c2, [
-    //'menu' => false,
     'paginator' => false,
 ]);
 $files = new File($app->db);
 $files->removeUserAction('add');
 $files->removeUserAction('edit');
 $files->addUserAction('cleanup_drafts', [
-    'callback' => function($m) use ($gr) {
+    'callback' => function($m) {
         $m->cleanupDrafts();
-        //return $gr->jsReload(); // @todo this way it's impossible
         return 'Draft files are deleted.';
+        // return $gr->jsReload(); // @todo this way it's impossible
     },
     'appliesTo' => Model\UserAction::APPLIES_TO_NO_RECORDS,
     'description' => 'Cleanup Drafts',
