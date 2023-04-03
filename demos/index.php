@@ -68,8 +68,9 @@ $files = new File($app->db);
 $files->removeUserAction('add');
 $files->removeUserAction('edit');
 $files->addUserAction('cleanup_drafts', [
-    'callback' => function($m) {
+    'callback' => function ($m) {
         $m->cleanupDrafts();
+
         return 'Draft files are deleted.';
         // return $gr->jsReload(); // @todo this way it's impossible
     },
