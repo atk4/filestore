@@ -12,91 +12,46 @@ class Helper
     /**
      * @return never
      */
-    public static function download(File $model, App $app = null): void
+    public static function download(File $model, App $app): void
     {
-        $headers = [
-            'Content-Description' => 'File Transfer',
-            'Content-Type' => 'application/octet-stream',
-            'Cache-Control' => 'must-revalidate',
-            'Expires' => '-1',
-            'Content-Disposition' => 'attachment; filename="' . $model->get('meta_filename') . '"',
-            'Content-Length' => (string) $model->get('meta_size'),
-            'Pragma' => 'public',
-            'Accept-Ranges' => 'bytes',
-        ];
+        $app->setResponseHeader('Content-Description', 'File Transfer');
+        $app->setResponseHeader('Content-Type', 'application/octet-stream');
+        $app->setResponseHeader('Cache-Control', 'must-revalidate');
+        $app->setResponseHeader('Expires', '-1');
+        $app->setResponseHeader('Content-Disposition', 'attachment; filename="' . $model->get('meta_filename') . '"');
+        $app->setResponseHeader('Content-Length', (string) $model->get('meta_size'));
+        $app->setResponseHeader('Pragma', 'public');
+        $app->setResponseHeader('Accept-Ranges', 'bytes');
 
-        static::output($model, $headers, $app);
+        static::output($model, $app);
     }
 
     /**
      * @return never
      */
-    public static function view(File $model, App $app = null): void
+    public static function view(File $model, App $app): void
     {
-        $headers = [
-            'Content-Description' => 'File Transfer',
-            'Content-Type' => $model->get('meta_mime_type'),
-            'Cache-Control' => 'must-revalidate',
-            'Expires' => '-1',
-            'Content-Disposition' => 'inline; filename="' . $model->get('meta_filename') . '"',
-            'Content-Length' => (string) $model->get('meta_size'),
-            'Pragma' => 'public',
-            'Accept-Ranges' => 'bytes',
-        ];
+        $app->setResponseHeader('Content-Description', 'File Transfer');
+        $app->setResponseHeader('Content-Type', $model->get('meta_mime_type'));
+        $app->setResponseHeader('Cache-Control', 'must-revalidate');
+        $app->setResponseHeader('Expires', '-1');
+        $app->setResponseHeader('Content-Disposition', 'inline; filename="' . $model->get('meta_filename') . '"');
+        $app->setResponseHeader('Content-Length', (string) $model->get('meta_size'));
+        $app->setResponseHeader('Pragma', 'public');
+        $app->setResponseHeader('Accept-Ranges', 'bytes');
 
-        static::output($model, $headers, $app);
+        static::output($model, $app);
     }
 
     /**
-     * @param array<string, string> $headers
-     *
      * @return never
      */
-    protected static function output(File $model, array $headers, App $app = null): void
+    protected static function output(File $model, App $app): void
     {
-        // TODO move to App and add support for streams
+        $path = $model->get('location');
 
-        $location = $model->get('location');
-
-        if ($app !== null) {
-            foreach ($headers as $name => $value) {
-                $app->setResponseHeader($name, $value);
-            }
-            $app->terminate($model->flysystem->read($location));
-        }
-
-        $isCli = \PHP_SAPI === 'cli'; // for phpunit
-
-        $headers = self::normalizeHeaders($headers);
-        foreach ($headers as $name => $value) {
-            if (!$isCli) {
-                $name = preg_replace_callback('~(?<![a-zA-Z])[a-z]~', function ($matches) {
-                    return strtoupper($matches[0]);
-                }, strtolower($name));
-
-                header($name . ': ' . $value);
-            }
-        }
-
-        fpassthru($model->flysystem->readStream($location));
-
-        exit;
-    }
-
-    /**
-     * Copied from atk4/ui App class. Used only if App is not available.
-     *
-     * @param array<string, string> $headers
-     *
-     * @return array<string, string>
-     */
-    private static function normalizeHeaders(array $headers): array
-    {
-        $res = [];
-        foreach ($headers as $k => $v) {
-            $res[strtolower(trim($k))] = trim($v);
-        }
-
-        return $res;
+        // TODO support streaming
+        // fpassthru($model->flysystem->readStream($path));
+        $app->terminate($model->flysystem->read($path));
     }
 }
