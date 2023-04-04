@@ -6,7 +6,7 @@ namespace Atk4\Filestore;
 
 use Atk4\Filestore\Model\File;
 use Atk4\Ui\App;
-use Nyholm\Psr7\Stream;
+use Nyholm\Psr7\Factory\Psr17Factory
 
 class Helper
 {
@@ -53,7 +53,7 @@ class Helper
 
         if ($streamOutput) {
             $resource = $model->flysystem->readStream($path);
-            $factory = new \Nyholm\Psr7\Factory\Psr17Factory();
+            $factory = new Psr17Factory();
             $stream = $factory->createStreamFromResource($resource);
             $app->terminate($stream);
         } else {
