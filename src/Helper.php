@@ -6,7 +6,7 @@ namespace Atk4\Filestore;
 
 use Atk4\Filestore\Model\File;
 use Atk4\Ui\App;
-use Nyholm\Psr7\Factory\Psr17Factory
+use Nyholm\Psr7\Factory\Psr17Factory;
 
 class Helper
 {
@@ -24,7 +24,7 @@ class Helper
         $app->setResponseHeader('Pragma', 'public');
         $app->setResponseHeader('Accept-Ranges', 'bytes');
 
-        static::output($model, $app, true);
+        static::output($model, $app);
     }
 
     /**
@@ -41,23 +41,18 @@ class Helper
         $app->setResponseHeader('Pragma', 'public');
         $app->setResponseHeader('Accept-Ranges', 'bytes');
 
-        static::output($model, $app, true);
+        static::output($model, $app);
     }
 
     /**
      * @return never
      */
-    protected static function output(File $model, App $app, bool $streamOutput = false): void
+    protected static function output(File $model, App $app): void
     {
         $path = $model->get('location');
-
-        if ($streamOutput) {
-            $resource = $model->flysystem->readStream($path);
-            $factory = new Psr17Factory();
-            $stream = $factory->createStreamFromResource($resource);
-            $app->terminate($stream);
-        } else {
-            $app->terminate($model->flysystem->read($path));
-        }
+        $resource = $model->flysystem->readStream($path);
+        $factory = new Psr17Factory();
+        $stream = $factory->createStreamFromResource($resource);
+        $app->terminate($stream);
     }
 }
