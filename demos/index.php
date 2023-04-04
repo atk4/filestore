@@ -67,6 +67,7 @@ $gr = \Atk4\Ui\Crud::addTo($c2, [
 $files = new File($app->db);
 $files->removeUserAction('add');
 $files->removeUserAction('edit');
+$files->removeUserAction('delete');
 $files->addUserAction('cleanup_drafts', [
     'callback' => function ($m) {
         $m->cleanupDrafts();

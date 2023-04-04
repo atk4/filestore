@@ -53,14 +53,9 @@ class Helper
 
         if ($streamOutput) {
             $resource = $model->flysystem->readStream($path);
-            $stream = Stream::create($resource);
-            $app->getResponse()->withBody($stream);
-
-            // @todo
-            // 1. in App->outputResponse it overwrites stream?
-            // 2. in same method i guess we have to add if ($this->response->getBody()->isWritable()) for write()
-            // 3. but also that do not help - it still streams empty response for some reason even if in stream there is data
-            $app->terminate();
+            $factory = new \Nyholm\Psr7\Factory\Psr17Factory();
+            $stream = $factory->createStreamFromResource($resource);
+            $app->terminate($stream);
         } else {
             $app->terminate($model->flysystem->read($path));
         }
