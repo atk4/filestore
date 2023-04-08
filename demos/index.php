@@ -52,9 +52,7 @@ $form->setModel(
 $form->onSubmit(function (Form $form) use ($app) {
     $form->model->save();
 
-    return new JsBlock([
-        $app->layout->jsReload(),
-    ]);
+    return $app->layout->jsReload();
 });
 
 // Grid with all filestore files
