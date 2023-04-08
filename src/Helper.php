@@ -51,8 +51,8 @@ class Helper
     {
         $path = $model->get('location');
         $resource = $model->flysystem->readStream($path);
-        $factory = new Psr17Factory();
-        $stream = $factory->createStreamFromResource($resource);
+        $stream = (new Psr17Factory())->createStreamFromResource($resource);
+
         $app->terminate($stream);
     }
 }
