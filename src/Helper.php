@@ -6,6 +6,7 @@ namespace Atk4\Filestore;
 
 use Atk4\Filestore\Model\File;
 use Atk4\Ui\App;
+use Nyholm\Psr7\Factory\Psr17Factory;
 
 class Helper
 {
@@ -32,10 +33,10 @@ class Helper
     protected static function output(File $model, App $app): void
     {
         $path = $model->get('location');
+        $resource = $model->flysystem->readStream($path);
+        $stream = (new Psr17Factory())->createStreamFromResource($resource);
 
-        // TODO support streaming
-        // fpassthru($model->flysystem->readStream($path));
-        $app->terminate($model->flysystem->read($path));
+        $app->terminate($stream);
     }
 
     /**
