@@ -6,95 +6,53 @@ namespace Atk4\Filestore;
 
 use Atk4\Filestore\Model\File;
 use Atk4\Ui\App;
+use Nyholm\Psr7\Factory\Psr17Factory;
 
 class Helper
 {
     /**
      * @return never
      */
-    public static function download(File $model, App $app = null): void
+    public static function download(File $model, App $app): void
     {
-        $headers = [
-            'Content-Description' => 'File Transfer',
-            'Content-Type' => 'application/octet-stream',
-            'Cache-Control' => 'must-revalidate',
-            'Expires' => '-1',
-            'Content-Disposition' => 'attachment; filename="' . $model->get('meta_filename') . '"',
-            'Content-Length' => (string) $model->get('meta_size'),
-            'Pragma' => 'public',
-            'Accept-Ranges' => 'bytes',
-        ];
+        $app->setResponseHeader('Content-Description', 'File Transfer');
+        $app->setResponseHeader('Content-Type', 'application/octet-stream');
+        $app->setResponseHeader('Cache-Control', 'must-revalidate');
+        $app->setResponseHeader('Expires', '-1');
+        $app->setResponseHeader('Content-Disposition', 'attachment; filename="' . $model->get('meta_filename') . '"');
+        $app->setResponseHeader('Content-Length', (string) $model->get('meta_size'));
+        $app->setResponseHeader('Pragma', 'public');
+        $app->setResponseHeader('Accept-Ranges', 'bytes');
 
-        static::output($model, $headers, $app);
-    }
-
-    /**
-     * @param array<string, string> $headers
-     *
-     * @return never
-     */
-    protected static function output(File $model, array $headers, App $app = null): void
-    {
-        // TODO move to App and add support for streams
-
-        $headers = self::normalizeHeaders($headers);
-
-        $location = $model->get('location');
-
-        if ($app !== null) {
-            $app->terminate($model->flysystem->read($location), $headers);
-        }
-
-        $isCli = \PHP_SAPI === 'cli'; // for phpunit
-
-        foreach ($headers as $k => $v) {
-            if (!$isCli) {
-                $kCamelCase = preg_replace_callback('~(?<![a-zA-Z])[a-z]~', function ($matches) {
-                    return strtoupper($matches[0]);
-                }, $k);
-
-                header($kCamelCase . ': ' . $v);
-            }
-        }
-
-        fpassthru($model->flysystem->readStream($location));
-
-        exit;
+        static::output($model, $app);
     }
 
     /**
      * @return never
      */
-    public static function view(File $model, App $app = null): void
+    protected static function output(File $model, App $app): void
     {
-        $headers = [
-            'Content-Description' => 'File Transfer',
-            'Content-Type' => $model->get('meta_mime_type'),
-            'Cache-Control' => 'must-revalidate',
-            'Expires' => '-1',
-            'Content-Disposition' => 'inline; filename="' . $model->get('meta_filename') . '"',
-            'Content-Length' => (string) $model->get('meta_size'),
-            'Pragma' => 'public',
-            'Accept-Ranges' => 'bytes',
-        ];
+        $path = $model->get('location');
+        $resource = $model->flysystem->readStream($path);
+        $stream = (new Psr17Factory())->createStreamFromResource($resource);
 
-        static::output($model, $headers, $app);
+        $app->terminate($stream);
     }
 
     /**
-     * Copied from atk4/ui App class.
-     *
-     * @param array<string, string> $headers
-     *
-     * @return array<string, string>
+     * @return never
      */
-    private static function normalizeHeaders(array $headers): array
+    public static function view(File $model, App $app): void
     {
-        $res = [];
-        foreach ($headers as $k => $v) {
-            $res[strtolower(trim($k))] = trim($v);
-        }
+        $app->setResponseHeader('Content-Description', 'File Transfer');
+        $app->setResponseHeader('Content-Type', $model->get('meta_mime_type'));
+        $app->setResponseHeader('Cache-Control', 'must-revalidate');
+        $app->setResponseHeader('Expires', '-1');
+        $app->setResponseHeader('Content-Disposition', 'inline; filename="' . $model->get('meta_filename') . '"');
+        $app->setResponseHeader('Content-Length', (string) $model->get('meta_size'));
+        $app->setResponseHeader('Pragma', 'public');
+        $app->setResponseHeader('Accept-Ranges', 'bytes');
 
-        return $res;
+        static::output($model, $app);
     }
 }
