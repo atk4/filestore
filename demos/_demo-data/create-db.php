@@ -26,6 +26,7 @@ $fileModel->addField('url', ['type' => 'text']);
 $fileModel->addField('storage');
 $fileModel->addField('status');
 $fileModel->addField('source_file_id', ['type' => 'integer']);
+$fileModel->addField('created_at', ['type' => 'datetime', 'required' => true]);
 $fileModel->addField('meta_filename');
 $fileModel->addField('meta_extension');
 $fileModel->addField('meta_md5');

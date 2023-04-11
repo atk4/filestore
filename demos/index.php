@@ -12,7 +12,6 @@ use Atk4\Ui\Callback;
 use Atk4\Ui\Columns;
 use Atk4\Ui\Form;
 use Atk4\Ui\Header;
-use Atk4\Ui\Js\JsBlock;
 use Atk4\Ui\Js\JsExpression;
 use Atk4\Ui\View;
 use League\Flysystem\Filesystem;
@@ -71,7 +70,7 @@ $files->addUserAction('cleanup_drafts', [
         $m->cleanupDrafts();
 
         return 'Draft files are deleted.';
-        // return $gr->jsReload(); // @todo this way it's impossible
+        // return $gr->jsReload(); // @todo this way it's impossible?
     },
     'appliesTo' => Model\UserAction::APPLIES_TO_NO_RECORDS,
     'description' => 'Cleanup Drafts',
