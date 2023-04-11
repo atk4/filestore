@@ -105,7 +105,7 @@ class File extends Model
     }
 
     /**
-     * @return $this
+     * @return static
      */
     public function newFile()
     {
@@ -124,7 +124,7 @@ class File extends Model
      * @param string $path     Path to file to import
      * @param string $fileName Optional original file name
      *
-     * @return $this
+     * @return static
      */
     public function createFromPath(string $path, string $fileName = null)
     {
