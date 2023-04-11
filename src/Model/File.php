@@ -104,7 +104,10 @@ class File extends Model
         });
     }
 
-    public function newFile(): Model
+    /**
+     * @return $this
+     */
+    public function newFile()
     {
         $this->assertIsModel();
 
@@ -120,8 +123,10 @@ class File extends Model
      *
      * @param string $path     Path to file to import
      * @param string $fileName Optional original file name
+     *
+     * @return $this
      */
-    public function createFromPath(string $path, string $fileName = null): Model
+    public function createFromPath(string $path, string $fileName = null)
     {
         $this->assertIsModel();
 
