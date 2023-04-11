@@ -16,22 +16,22 @@ class File extends Model
     /** @const string All uploaded files first get this status */
     public const STATUS_DRAFT = 'draft';
     /** @const string Not implemented */
-    //public const STATUS_UPLOADED = 'uploaded';
+    // public const STATUS_UPLOADED = 'uploaded';
     /** @const string Not implemented */
-    //public const STATUS_THUMB_OK = 'thumbok';
+    // public const STATUS_THUMB_OK = 'thumbok';
     /** @const string Not implemented */
-    //public const STATUS_NORMAL_OK = 'normalok';
+    // public const STATUS_NORMAL_OK = 'normalok';
     /** @const string Not implemented */
-    //public const STATUS_READY = 'ready';
+    // public const STATUS_READY = 'ready';
     /** @const string When file is linked to some other model */
     public const STATUS_LINKED = 'linked';
     /** @const array */
     public const ALL_STATUSES = [
         self::STATUS_DRAFT,
-        //self::STATUS_UPLOADED,
-        //self::STATUS_THUMB_OK,
-        //self::STATUS_NORMAL_OK,
-        //self::STATUS_READY,
+        // self::STATUS_UPLOADED,
+        // self::STATUS_THUMB_OK,
+        // self::STATUS_NORMAL_OK,
+        // self::STATUS_READY,
         self::STATUS_LINKED,
     ];
 
@@ -112,8 +112,7 @@ class File extends Model
     {
         $files = (clone $this->getModel())
             ->addCondition('status', self::STATUS_DRAFT)
-            ->addCondition('created_at', '<', (new \DateTime())->sub(new \DateInterval('PT' . $this->cleanupDraftsDelay . 'S')))
-            ;
+            ->addCondition('created_at', '<', (new \DateTime())->sub(new \DateInterval('PT' . $this->cleanupDraftsDelay . 'S')));
         foreach ($files as $file) {
             $file->delete();
         }
