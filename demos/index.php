@@ -61,7 +61,7 @@ Header::addTo($c2, ['All Filestore Files']);
 $gr = \Atk4\Ui\Crud::addTo($c2, [
     'paginator' => false,
 ]);
-$files = new File($app->db);
+$files = new File($app->db, ['flysystem' => $filesystem]);
 $files->removeUserAction('add');
 $files->removeUserAction('edit');
 $files->removeUserAction('delete');
