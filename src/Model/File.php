@@ -78,7 +78,7 @@ class File extends Model
 
         // change status of thumbs when status of original image changes
         $this->onHook(Model::HOOK_AFTER_SAVE, function (self $m) {
-            if ($m->get('status')===self::STATUS_LINKED) {
+            if ($m->get('status') === self::STATUS_LINKED) {
                 $files = (clone $m->getModel())->addCondition('source_file_id', $m->getId());
                 foreach ($files as $file) {
                     $file->set('status', self::STATUS_THUMB);
@@ -186,17 +186,20 @@ class File extends Model
         $max_width = $this->thumbnailMaxWidth;
         $max_height = $this->thumbnailMaxHeight;
 
-        list($width, $height, $image_type) = getimagesize($path);
+        [$width, $height, $image_type] = getimagesize($path);
 
         switch ($image_type) {
             case \IMAGETYPE_GIF:
                 $src = imagecreatefromgif($path);
+
                 break;
             case \IMAGETYPE_JPEG:
                 $src = imagecreatefromjpeg($path);
+
                 break;
             case \IMAGETYPE_PNG:
                 $src = imagecreatefrompng($path);
+
                 break;
             default:
                 return false; // unsupported image type
@@ -219,7 +222,7 @@ class File extends Model
         $tmp = imagecreatetruecolor($tn_width, $tn_height);
 
         // Check if this image is PNG or GIF, then set if Transparent
-        if ($image_type == \IMAGETYPE_PNG || $image_type == \IMAGETYPE_GIF) {
+        if ($image_type === \IMAGETYPE_PNG || $image_type === \IMAGETYPE_GIF) {
             imagealphablending($tmp, false);
             imagesavealpha($tmp, true);
             $transparent = imagecolorallocatealpha($tmp, 255, 255, 255, 127);
@@ -232,12 +235,15 @@ class File extends Model
         switch ($image_type) {
             case \IMAGETYPE_GIF:
                 imagegif($tmp, $thumbFile);
+
                 break;
             case \IMAGETYPE_JPEG:
                 imagejpeg($tmp, $thumbFile, 100); // best quality
+
                 break;
             case \IMAGETYPE_PNG:
                 imagepng($tmp, $thumbFile, 0); // no compression
+
                 break;
         }
         $uri = stream_get_meta_data($thumbFile)['uri'];
