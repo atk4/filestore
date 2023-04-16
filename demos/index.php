@@ -11,6 +11,7 @@ use Atk4\Ui\Callback;
 use Atk4\Ui\Columns;
 use Atk4\Ui\Crud;
 use Atk4\Ui\Form;
+use Atk4\Ui\Grid;
 use Atk4\Ui\Header;
 use Atk4\Ui\Js\JsExpression;
 use Atk4\Ui\View;
@@ -57,7 +58,7 @@ $form->onSubmit(function (Form $form) use ($app) {
 // list all filestore files
 $c2 = $columnsLayout->addColumn();
 Header::addTo($c2, ['All Filestore Files']);
-$gr = Crud::addTo($c2, [
+$gr = Grid::addTo($c2, [
     'paginator' => false,
 ]);
 $files = new File($app->db, ['flysystem' => $filesystem]);
