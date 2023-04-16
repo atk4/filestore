@@ -6,6 +6,7 @@ namespace Atk4\Filestore\Model;
 
 use Atk4\Data\Model;
 use League\Flysystem\Filesystem;
+use League\MimeTypeDetection\FinfoMimeTypeDetector;
 
 class File extends Model
 {
@@ -13,18 +14,18 @@ class File extends Model
 
     public ?string $titleField = 'meta_filename';
 
+    /** @const string All uploaded files first get this status */
+    public const STATUS_DRAFT = 'draft';
+    /** @const string When file is linked to some other model */
+    public const STATUS_LINKED = 'linked';
+    /** @const array */
+    public const ALL_STATUSES = [
+        self::STATUS_DRAFT,
+        self::STATUS_LINKED,
+    ];
+
     /** @var Filesystem */
     public $flysystem;
-
-    public function newFile(): Model
-    {
-        $entity = $this->createEntity();
-
-        $entity->set('token', uniqid('token-'));
-        $entity->set('location', uniqid('file-') . '.bin');
-
-        return $entity;
-    }
 
     protected function init(): void
     {
@@ -32,15 +33,15 @@ class File extends Model
 
         $this->addField('token', ['system' => true, 'type' => 'string', 'required' => true]);
         $this->addField('location');
-        $this->addField('url');
-        $this->addField('storage');
-        $this->hasOne('source_file_id', [
+        $this->addField('url'); // not implemented
+        $this->addField('storage'); // not implemented
+        $this->hasOne('source_file_id', [ // this field can be used to link thumb images (when we'll implement that) to source image for example
             'model' => [self::class],
         ]);
 
         $this->addField('status', [
-            'enum' => ['draft', 'uploaded', 'thumbok', 'normalok', 'ready', 'linked'],
-            'default' => 'draft',
+            'enum' => self::ALL_STATUSES,
+            'default' => self::STATUS_DRAFT,
         ]);
 
         $this->addField('meta_filename');
@@ -52,10 +53,22 @@ class File extends Model
         $this->addField('meta_image_width', ['type' => 'integer']);
         $this->addField('meta_image_height', ['type' => 'integer']);
 
+        // cascade-delete all related child files
         $this->onHook(Model::HOOK_BEFORE_DELETE, function (self $m) {
             if ($m->flysystem) { // @phpstan-ignore-line
                 $m->flysystem->delete($m->get('location'));
             }
         });
+    }
+
+    public function newFile(): Model
+    {
+        $this->assertIsModel();
+
+        $entity = $this->createEntity();
+        $entity->set('token', uniqid('token-'));
+        $entity->set('location', uniqid('file-') . '.bin');
+
+        return $entity;
     }
 }

@@ -59,7 +59,8 @@ class FileField extends Field
         $this->fieldNameBase = preg_replace('~_id$~', '', $this->shortName);
         $this->importFields();
 
-        $this->onHookToOwnerEntity(Model::HOOK_AFTER_SAVE, function (Model $m) {
+        // on insert/update delete old file and mark new one as linked
+        $fx = function (Model $m) {
             if ($m->isDirty($this->shortName)) {
                 $old = $m->getDirtyRef()[$this->shortName];
                 $new = $m->get($this->shortName);
@@ -71,10 +72,12 @@ class FileField extends Field
 
                 // mark new file as linked
                 if ($new) {
-                    $m->refModel($this->shortName)->loadBy('token', $new)->save(['status' => 'linked']);
+                    $m->refModel($this->shortName)->loadBy('token', $new)->save(['status' => File::STATUS_LINKED]);
                 }
             }
-        });
+        };
+        $this->onHookToOwnerEntity(Model::HOOK_AFTER_INSERT, $fx);
+        $this->onHookToOwnerEntity(Model::HOOK_AFTER_UPDATE, $fx);
 
         $this->onHookToOwnerEntity(Model::HOOK_AFTER_DELETE, function (Model $m) {
             $token = $m->get($this->shortName);
