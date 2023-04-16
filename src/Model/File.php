@@ -30,14 +30,17 @@ class File extends Model
     /** @var Filesystem */
     public $flysystem;
 
-    /** @bool Should we automatically create thumbnail for images */
+    /** Should we automatically create thumbnail for images */
     public bool $createThumbnail = true;
 
-    /** @int Thumbnail image max width in pixels */
+    /** Thumbnail image max width in pixels */
     protected int $thumbnailMaxWidth = 150;
 
-    /** @int Thumbnail image max height in pixels */
+    /** Thumbnail image max height in pixels */
     protected int $thumbnailMaxHeight = 150;
+
+    /** Thumbnail format - \IMAGETYPE_PNG, \IMAGETYPE_JPEG and \IMAGETYPE_GIF are supported */
+    protected int $thumbnailFormat = \IMAGETYPE_PNG;
 
     /** In seconds, to prevent cleaning up unsaved forms */
     protected int $cleanupDraftsDelay = 2 * 24 * 3600;
@@ -225,7 +228,7 @@ class File extends Model
         $tmp = imagecreatetruecolor($tn_width, $tn_height);
 
         // Check if this image is PNG or GIF, then set if Transparent
-        if ($image_type === \IMAGETYPE_PNG || $image_type === \IMAGETYPE_GIF) {
+        if ($this->thumbnailFormat === \IMAGETYPE_PNG || $this->thumbnailFormat === \IMAGETYPE_GIF) {
             imagealphablending($tmp, false);
             imagesavealpha($tmp, true);
             $transparent = imagecolorallocatealpha($tmp, 255, 255, 255, 127);
@@ -235,7 +238,7 @@ class File extends Model
 
         // create temporary thumb file
         $thumbFile = tmpfile();
-        switch ($image_type) {
+        switch ($this->thumbnailFormat) {
             case \IMAGETYPE_GIF:
                 imagegif($tmp, $thumbFile);
 
@@ -256,7 +259,7 @@ class File extends Model
         imagedestroy($tmp);
 
         // Import it in filestore and link to this (original image) entity
-        $ext = $this->get('meta_extension') ? '.' . $this->get('meta_extension') : '';
+        $ext = image_type_to_extension($this->thumbnailFormat);
         $thumbName = basename($this->get('meta_filename'), $ext) . '.thumb' . $ext;
         $thumbModel = $this->getModel();
         $thumbModel->createThumbnail = false; // do not create thumbnails of thumbnails
