@@ -28,7 +28,7 @@ class File extends Model
     public $flysystem;
 
     /** @int Delay in seconds used to avoid race condition when cleaning up draft records */
-    protected int $cleanupDraftsDelay = 5;
+    protected int $cleanupDraftsDelay = 60;
 
     protected function init(): void
     {
