@@ -55,8 +55,17 @@ class File extends Model
 
         // cascade-delete all related child files
         $this->onHook(Model::HOOK_BEFORE_DELETE, function (self $m) {
-            if ($m->flysystem) { // @phpstan-ignore-line
-                $m->flysystem->delete($m->get('location'));
+            $files = (clone $m->getModel())->addCondition('source_file_id', $m->getId());
+            foreach ($files as $file) {
+                $file->delete();
+            }
+        });
+
+        // delete physical file from storage after we delete DB record
+        $this->onHook(Model::HOOK_AFTER_DELETE, function (self $m) {
+            $path = $m->get('location');
+            if ($path && $m->flysystem && $m->flysystem->fileExists($path)) { // @phpstan-ignore-line
+                $m->flysystem->delete($path);
             }
         });
     }
