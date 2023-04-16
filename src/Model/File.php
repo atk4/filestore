@@ -32,7 +32,7 @@ class File extends Model
 
         $this->addField('token', ['system' => true, 'type' => 'string', 'required' => true]);
         $this->addField('location');
-        $this->addField('url'); // not implemented
+        $this->addField('url');
 
         $this->addField('status', [
             'enum' => self::ALL_STATUSES,
