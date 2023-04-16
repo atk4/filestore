@@ -192,25 +192,12 @@ class File extends Model
         $max_width = $this->thumbnailMaxWidth;
         $max_height = $this->thumbnailMaxHeight;
 
-        [$width, $height, $image_type] = getimagesize($path);
-
-        switch ($image_type) {
-            case \IMAGETYPE_GIF:
-                $src = imagecreatefromgif($path);
-
-                break;
-            case \IMAGETYPE_JPEG:
-                $src = imagecreatefromjpeg($path);
-
-                break;
-            case \IMAGETYPE_PNG:
-                $src = imagecreatefrompng($path);
-
-                break;
-            default:
-                return false; // unsupported image type
+        $src = imagecreatefromstring(file_get_contents($path));
+        if ($src === false) {
+            return false; // unsupported image type
         }
 
+        [$width, $height] = getimagesize($path);
         $x_ratio = $max_width / $width;
         $y_ratio = $max_height / $height;
 
@@ -245,11 +232,11 @@ class File extends Model
 
                     break;
                 case \IMAGETYPE_JPEG:
-                    imagejpeg($tmp, $thumbFile, 100); // best quality
+                    imagejpeg($tmp, $thumbFile, 100); // 0=worst quality, 100=best quality
 
                     break;
                 case \IMAGETYPE_PNG:
-                    imagepng($tmp, $thumbFile, 0); // no compression
+                    imagepng($tmp, $thumbFile, 0); // 0=no compression, 9=max compression
 
                     break;
             }
