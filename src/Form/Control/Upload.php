@@ -67,7 +67,7 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
         $model = $this->entityField->getField()->fileModel;
         $entity = $model->loadBy('token', $token);
 
-        if ($entity->get('status') === 'draft') {
+        if ($entity->get('status') === $entity::STATUS_DRAFT) {
             $entity->delete();
         }
 

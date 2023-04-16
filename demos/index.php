@@ -9,7 +9,10 @@ use Atk4\Filestore\Helper;
 use Atk4\Filestore\Model\File;
 use Atk4\Ui\Callback;
 use Atk4\Ui\Columns;
+use Atk4\Ui\Crud;
 use Atk4\Ui\Form;
+use Atk4\Ui\Grid;
+use Atk4\Ui\Header;
 use Atk4\Ui\Js\JsExpression;
 use Atk4\Ui\View;
 use League\Flysystem\Filesystem;
@@ -34,34 +37,41 @@ try {
 $adapter = new \League\Flysystem\Local\LocalFilesystemAdapter(__DIR__ . '/_demo-data/localfiles');
 $filesystem = new Filesystem($adapter);
 
-$col = Columns::addTo($app);
+$columnsLayout = Columns::addTo($app);
 
-$form = Form::addTo($col->addColumn());
+// new friend form
+$c1 = $columnsLayout->addColumn();
+Header::addTo($c1, ['Add New Friend']);
+$form = Form::addTo($c1);
 $form->setModel(
     (new Friend($app->db, [
         'filesystem' => $filesystem,
     ]))->createEntity()
 );
 
-$gr = \Atk4\Ui\Grid::addTo($col->addColumn(), [
-    'menu' => false,
-    'paginator' => false,
-]);
-$gr->setModel(new File($app->db));
-
-$form->onSubmit(function (Form $form) use ($gr) {
+$form->onSubmit(function (Form $form) use ($app) {
     $form->model->save();
 
-    return $gr->jsReload();
+    return $app->layout->jsReload();
 });
 
+// list all filestore files
+$c2 = $columnsLayout->addColumn();
+Header::addTo($c2, ['All Filestore Files']);
+$gr = Grid::addTo($c2, [
+    'paginator' => false,
+]);
+$files = new File($app->db, ['flysystem' => $filesystem]);
+$gr->setModel($files);
+
 View::addTo($app, ['ui' => 'divider']);
 
-$crud = \Atk4\Ui\Crud::addTo($app);
+// CRUD with all Friends records
+Header::addTo($app, ['All Friends']);
+$crud = Crud::addTo($app);
 $crud->setModel(new Friend($app->db, ['filesystem' => $filesystem]));
 
-View::addTo($app, ['ui' => 'divider']);
-
+// custom actions
 $callbackDownload = Callback::addTo($app);
 $callbackDownload->set(function () use ($crud) {
     $id = $crud->getApp()->stickyGet('row_id');

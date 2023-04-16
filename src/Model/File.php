@@ -13,18 +13,18 @@ class File extends Model
 
     public ?string $titleField = 'meta_filename';
 
+    /** All uploaded files first get this status */
+    public const STATUS_DRAFT = 'draft';
+    /** When file is linked to some other model */
+    public const STATUS_LINKED = 'linked';
+    /** @const list<string> */
+    public const ALL_STATUSES = [
+        self::STATUS_DRAFT,
+        self::STATUS_LINKED,
+    ];
+
     /** @var Filesystem */
     public $flysystem;
-
-    public function newFile(): Model
-    {
-        $entity = $this->createEntity();
-
-        $entity->set('token', uniqid('token-'));
-        $entity->set('location', uniqid('file-') . '.bin');
-
-        return $entity;
-    }
 
     protected function init(): void
     {
@@ -33,14 +33,10 @@ class File extends Model
         $this->addField('token', ['system' => true, 'type' => 'string', 'required' => true]);
         $this->addField('location');
         $this->addField('url');
-        $this->addField('storage');
-        $this->hasOne('source_file_id', [
-            'model' => [self::class],
-        ]);
 
         $this->addField('status', [
-            'enum' => ['draft', 'uploaded', 'thumbok', 'normalok', 'ready', 'linked'],
-            'default' => 'draft',
+            'enum' => self::ALL_STATUSES,
+            'default' => self::STATUS_DRAFT,
         ]);
 
         $this->addField('meta_filename');
@@ -52,10 +48,26 @@ class File extends Model
         $this->addField('meta_image_width', ['type' => 'integer']);
         $this->addField('meta_image_height', ['type' => 'integer']);
 
-        $this->onHook(Model::HOOK_BEFORE_DELETE, function (self $m) {
-            if ($m->flysystem) { // @phpstan-ignore-line
-                $m->flysystem->delete($m->get('location'));
+        // delete physical file from storage after we delete DB record
+        $this->onHook(Model::HOOK_AFTER_DELETE, function (self $m) {
+            $path = $m->get('location');
+            if ($path && $m->flysystem->fileExists($path)) {
+                $m->flysystem->delete($path);
             }
         });
+    }
+
+    /**
+     * @return static
+     */
+    public function newFile(): Model
+    {
+        $this->assertIsModel();
+
+        $entity = $this->createEntity();
+        $entity->set('token', uniqid('token-'));
+        $entity->set('location', uniqid('file-') . '.bin');
+
+        return $entity;
     }
 }
