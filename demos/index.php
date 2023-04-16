@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Atk4\Filestore\Demos;
 
-use Atk4\Data\Model;
 use Atk4\Data\Persistence;
 use Atk4\Filestore\Helper;
 use Atk4\Filestore\Model\File;
