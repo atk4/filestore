@@ -215,7 +215,7 @@ class File extends Model
         $tmp = imagecreatetruecolor($tn_width, $tn_height);
 
         // Check if this image is PNG or GIF, then set if Transparent
-        if ($this->thumbnailFormat === \IMAGETYPE_PNG || $this->thumbnailFormat === \IMAGETYPE_GIF) {
+        if ($this->thumbnailFormat === 'png' || $this->thumbnailFormat === 'gif') {
             imagealphablending($tmp, false);
             imagesavealpha($tmp, true);
             $transparent = imagecolorallocatealpha($tmp, 255, 255, 255, 127);
@@ -227,18 +227,23 @@ class File extends Model
         try {
             $thumbFile = tmpfile();
             switch ($this->thumbnailFormat) {
-                case \IMAGETYPE_GIF:
+                case 'gif':
                     imagegif($tmp, $thumbFile);
+                    $ext = image_type_to_extension(\IMAGETYPE_GIF);
 
                     break;
-                case \IMAGETYPE_JPEG:
+                case 'jpg':
                     imagejpeg($tmp, $thumbFile, 100); // 0=worst quality, 100=best quality
+                    $ext = image_type_to_extension(\IMAGETYPE_JPEG);
 
                     break;
-                case \IMAGETYPE_PNG:
+                case 'png':
                     imagepng($tmp, $thumbFile, 0); // 0=no compression, 9=max compression
+                    $ext = image_type_to_extension(\IMAGETYPE_PNG);
 
                     break;
+                default:
+                    return false; // unsupported thumbnail format
             }
             $uri = stream_get_meta_data($thumbFile)['uri'];
 
@@ -247,7 +252,6 @@ class File extends Model
             imagedestroy($tmp);
 
             // Import it in filestore and link to this (original image) entity
-            $ext = image_type_to_extension($this->thumbnailFormat);
             $thumbName = basename($this->get('meta_filename'), $ext) . '.thumb' . $ext;
             $thumbModel = $this->getModel();
             $thumbModel->createThumbnail = false; // do not create thumbnails of thumbnails
