@@ -27,6 +27,9 @@ class File extends Model
     /** @var Filesystem */
     public $flysystem;
 
+    /** @int Delay in seconds used to avoid race condition when cleaning up draft records */
+    protected int $cleanupDraftsDelay = 5;
+
     protected function init(): void
     {
         parent::init();
@@ -39,6 +42,7 @@ class File extends Model
             'enum' => self::ALL_STATUSES,
             'default' => self::STATUS_DRAFT,
         ]);
+        $this->addField('created_at', ['type' => 'datetime', 'required' => true]);
 
         $this->addField('meta_filename');
         $this->addField('meta_extension');
@@ -48,6 +52,12 @@ class File extends Model
         $this->addField('meta_is_image', ['type' => 'boolean']);
         $this->addField('meta_image_width', ['type' => 'integer']);
         $this->addField('meta_image_height', ['type' => 'integer']);
+
+        $this->onHook(Model::HOOK_BEFORE_SAVE, function (self $m, bool $isUpdate) {
+            if ($isUpdate === false) {
+                $m->set('created_at', new \DateTime());
+            }
+        });
 
         // delete physical file from storage after we delete DB record
         $this->onHook(Model::HOOK_AFTER_DELETE, function (self $m) {
@@ -123,5 +133,25 @@ class File extends Model
         $entity->save();
 
         return $entity;
+    }
+
+    /**
+     * Useful method to clean up all draft files.
+     * Can be called as user action or on schedule bases to clean up filestore repository.
+     *
+     * @return $this
+     */
+    public function cleanupDrafts(): Model
+    {
+        $m = $this->isEntity() ? $this->getModel() : $this;
+
+        $files = (clone $m)
+            ->addCondition('status', self::STATUS_DRAFT)
+            ->addCondition('created_at', '<', (new \DateTime())->sub(new \DateInterval('PT' . $this->cleanupDraftsDelay . 'S')));
+        foreach ($files as $file) {
+            $file->delete();
+        }
+
+        return $this;
     }
 }

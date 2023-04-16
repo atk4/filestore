@@ -24,6 +24,7 @@ $fileModel->addField('token', ['required' => true]);
 $fileModel->addField('location', ['type' => 'text']);
 $fileModel->addField('url', ['type' => 'text']);
 $fileModel->addField('status');
+$fileModel->addField('created_at', ['type' => 'datetime', 'required' => true]);
 $fileModel->addField('meta_filename');
 $fileModel->addField('meta_extension');
 $fileModel->addField('meta_md5');

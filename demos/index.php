@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Atk4\Filestore\Demos;
 
+use Atk4\Data\Model;
 use Atk4\Data\Persistence;
 use Atk4\Filestore\Helper;
 use Atk4\Filestore\Model\File;
@@ -11,7 +12,6 @@ use Atk4\Ui\Callback;
 use Atk4\Ui\Columns;
 use Atk4\Ui\Crud;
 use Atk4\Ui\Form;
-use Atk4\Ui\Grid;
 use Atk4\Ui\Header;
 use Atk4\Ui\Js\JsExpression;
 use Atk4\Ui\View;
@@ -58,10 +58,23 @@ $form->onSubmit(function (Form $form) use ($app) {
 // list all filestore files
 $c2 = $columnsLayout->addColumn();
 Header::addTo($c2, ['All Filestore Files']);
-$gr = Grid::addTo($c2, [
+$gr = Crud::addTo($c2, [
     'paginator' => false,
 ]);
 $files = new File($app->db, ['flysystem' => $filesystem]);
+$files->removeUserAction('add');
+$files->removeUserAction('edit');
+$files->removeUserAction('delete');
+$files->addUserAction('cleanup_drafts', [
+    'callback' => function ($m) {
+        $m->cleanupDrafts();
+
+        return 'Draft files are deleted.';
+        // return $gr->jsReload(); // @todo this way it's impossible?
+    },
+    'appliesTo' => Model\UserAction::APPLIES_TO_NO_RECORDS,
+    'description' => 'Cleanup Drafts',
+]);
 $gr->setModel($files);
 
 View::addTo($app, ['ui' => 'divider']);
