@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Atk4\Filestore\Demos;
 
-use Atk4\Data\Model;
 use Atk4\Data\Persistence;
 use Atk4\Filestore\Helper;
 use Atk4\Filestore\Model\File;
@@ -63,7 +62,7 @@ $gr = Grid::addTo($c2, [
     'paginator' => false,
 ]);
 $files = new File($app->db, ['flysystem' => $filesystem]);
-$gr->menu->addItem('Cleanup Drafts')->on('click', function($js) use ($gr, $files) {
+$gr->menu->addItem('Cleanup Drafts')->on('click', function ($js) use ($gr, $files) {
     $files->cleanupDrafts();
 
     return $gr->jsReload();
