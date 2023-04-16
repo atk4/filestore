@@ -13,6 +13,18 @@ class Helper
     /**
      * @return never
      */
+    protected static function terminate(File $model, App $app): void
+    {
+        $path = $model->get('location');
+        $resource = $model->flysystem->readStream($path);
+        $stream = (new Psr17Factory())->createStreamFromResource($resource);
+
+        $app->terminate($stream);
+    }
+
+    /**
+     * @return never
+     */
     public static function download(File $model, App $app): void
     {
         $app->setResponseHeader('Content-Description', 'Download File');
@@ -24,7 +36,7 @@ class Helper
         $app->setResponseHeader('Pragma', 'public');
         $app->setResponseHeader('Accept-Ranges', 'bytes');
 
-        static::output($model, $app);
+        static::terminate($model, $app);
     }
 
     /**
@@ -41,18 +53,6 @@ class Helper
         $app->setResponseHeader('Pragma', 'public');
         $app->setResponseHeader('Accept-Ranges', 'bytes');
 
-        static::output($model, $app);
-    }
-
-    /**
-     * @return never
-     */
-    protected static function output(File $model, App $app): void
-    {
-        $path = $model->get('location');
-        $resource = $model->flysystem->readStream($path);
-        $stream = (new Psr17Factory())->createStreamFromResource($resource);
-
-        $app->terminate($stream);
+        static::terminate($model, $app);
     }
 }

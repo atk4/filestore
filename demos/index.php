@@ -36,11 +36,10 @@ try {
 $adapter = new \League\Flysystem\Local\LocalFilesystemAdapter(__DIR__ . '/_demo-data/localfiles');
 $filesystem = new Filesystem($adapter);
 
-$col = Columns::addTo($app);
+$columnsLayout = Columns::addTo($app);
 
-// New friend form
-$c1 = $col->addColumn()->setStyle('border', '1px solid gray');
-
+// new friend form
+$c1 = $columnsLayout->addColumn();
 Header::addTo($c1, ['Add New Friend']);
 $form = Form::addTo($c1);
 $form->setModel(
@@ -55,9 +54,8 @@ $form->onSubmit(function (Form $form) use ($app) {
     return $app->layout->jsReload();
 });
 
-// Grid with all filestore files
-$c2 = $col->addColumn()->setStyle('border', '1px solid gray');
-
+// list all filestore files
+$c2 = $columnsLayout->addColumn();
 Header::addTo($c2, ['All Filestore Files']);
 $gr = Crud::addTo($c2, [
     'paginator' => false,

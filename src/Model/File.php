@@ -57,6 +57,9 @@ class File extends Model
         });
     }
 
+    /**
+     * @return static
+     */
     public function newFile(): Model
     {
         $this->assertIsModel();
