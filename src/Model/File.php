@@ -80,21 +80,20 @@ class File extends Model
      *
      * @return static
      */
-    public function createFromPath(string $path, string $fileName = null)
+    public function createFromPath(string $path, string $fileName = null): Model
     {
         $this->assertIsModel();
 
         if ($fileName === null) {
             $fileName = basename($path);
         }
+
         $entity = $this->newFile();
 
         // store file in filesystem
         $stream = fopen($path, 'r+');
         $entity->flysystem->writeStream($entity->get('location'), $stream, ['visibility' => 'public']);
-        if (is_resource($stream)) {
-            fclose($stream);
-        }
+        fclose($stream);
 
         // detect mime-type
         $detector = new FinfoMimeTypeDetector();
