@@ -33,10 +33,6 @@ class File extends Model
         $this->addField('token', ['system' => true, 'type' => 'string', 'required' => true]);
         $this->addField('location');
         $this->addField('url'); // not implemented
-        $this->addField('storage'); // not implemented
-        $this->hasOne('source_file_id', [ // this field can be used to link thumb images (when we'll implement that) to source image for example
-            'model' => [self::class],
-        ]);
 
         $this->addField('status', [
             'enum' => self::ALL_STATUSES,
@@ -51,14 +47,6 @@ class File extends Model
         $this->addField('meta_is_image', ['type' => 'boolean']);
         $this->addField('meta_image_width', ['type' => 'integer']);
         $this->addField('meta_image_height', ['type' => 'integer']);
-
-        // cascade-delete all related child files
-        $this->onHook(Model::HOOK_BEFORE_DELETE, function (self $m) {
-            $files = (clone $m->getModel())->addCondition('source_file_id', $m->getId());
-            foreach ($files as $file) {
-                $file->delete();
-            }
-        });
 
         // delete physical file from storage after we delete DB record
         $this->onHook(Model::HOOK_AFTER_DELETE, function (self $m) {
