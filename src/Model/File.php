@@ -27,6 +27,9 @@ class File extends Model
     /** @var Filesystem */
     public $flysystem;
 
+    /** In seconds, to prevent cleaning up unsaved forms */
+    protected int $cleanupDraftsDelay = 2 * 24 * 3600;
+
     protected function init(): void
     {
         parent::init();
@@ -39,6 +42,7 @@ class File extends Model
             'enum' => self::ALL_STATUSES,
             'default' => self::STATUS_DRAFT,
         ]);
+        $this->addField('created_at', ['type' => 'datetime', 'required' => true]);
 
         $this->addField('meta_filename');
         $this->addField('meta_extension');
@@ -48,6 +52,12 @@ class File extends Model
         $this->addField('meta_is_image', ['type' => 'boolean']);
         $this->addField('meta_image_width', ['type' => 'integer']);
         $this->addField('meta_image_height', ['type' => 'integer']);
+
+        $this->onHook(Model::HOOK_BEFORE_SAVE, function (self $m, bool $isUpdate) {
+            if (!$isUpdate) {
+                $m->set('created_at', new \DateTime());
+            }
+        });
 
         // delete physical file from storage after we delete DB record
         $this->onHook(Model::HOOK_AFTER_DELETE, function (self $m) {
@@ -123,5 +133,18 @@ class File extends Model
         $entity->save();
 
         return $entity;
+    }
+
+    public function cleanupDrafts(): void
+    {
+        $this->getPersistence()->atomic(function () {
+            $files = (clone $this)
+                ->addCondition('status', self::STATUS_DRAFT)
+                ->addCondition('created_at', '<', (new \DateTime())->sub(new \DateInterval('PT' . $this->cleanupDraftsDelay . 'S')));
+
+            foreach ($files as $file) {
+                $file->delete();
+            }
+        });
     }
 }

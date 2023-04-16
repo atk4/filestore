@@ -62,6 +62,11 @@ $gr = Grid::addTo($c2, [
     'paginator' => false,
 ]);
 $files = new File($app->db, ['flysystem' => $filesystem]);
+$gr->menu->addItem('Cleanup Drafts')->on('click', function () use ($gr, $files) {
+    $files->cleanupDrafts();
+
+    return $gr->jsReload();
+});
 $gr->setModel($files);
 
 View::addTo($app, ['ui' => 'divider']);
