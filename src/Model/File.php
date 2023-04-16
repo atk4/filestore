@@ -137,13 +137,14 @@ class File extends Model
 
     public function cleanupDrafts(): void
     {
-        $this->assertIsModel();
+        $this->getPersistence()->atomic(function () {
+            $files = (clone $this)
+                ->addCondition('status', self::STATUS_DRAFT)
+                ->addCondition('created_at', '<', (new \DateTime())->sub(new \DateInterval('PT' . $this->cleanupDraftsDelay . 'S')));
 
-        $files = (clone $this)
-            ->addCondition('status', self::STATUS_DRAFT)
-            ->addCondition('created_at', '<', (new \DateTime())->sub(new \DateInterval('PT' . $this->cleanupDraftsDelay . 'S')));
-        foreach ($files as $file) {
-            $file->delete();
-        }
+            foreach ($files as $file) {
+                $file->delete();
+            }
+        });
     }
 }
