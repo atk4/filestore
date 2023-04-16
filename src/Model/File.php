@@ -138,10 +138,8 @@ class File extends Model
     /**
      * Useful method to clean up all draft files.
      * Can be called as user action or on schedule bases to clean up filestore repository.
-     *
-     * @return $this
      */
-    public function cleanupDrafts(): Model
+    public function cleanupDrafts(): void
     {
         $m = $this->isEntity() ? $this->getModel() : $this;
 
@@ -151,7 +149,5 @@ class File extends Model
         foreach ($files as $file) {
             $file->delete();
         }
-
-        return $this;
     }
 }
