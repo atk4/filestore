@@ -6,7 +6,6 @@ namespace Atk4\Filestore\Model;
 
 use Atk4\Data\Model;
 use League\Flysystem\Filesystem;
-use League\MimeTypeDetection\FinfoMimeTypeDetector;
 
 class File extends Model
 {
