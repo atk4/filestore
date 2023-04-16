@@ -54,7 +54,7 @@ class File extends Model
         $this->addField('meta_image_height', ['type' => 'integer']);
 
         $this->onHook(Model::HOOK_BEFORE_SAVE, function (self $m, bool $isUpdate) {
-            if ($isUpdate === false) {
+            if (!$isUpdate) {
                 $m->set('created_at', new \DateTime());
             }
         });
