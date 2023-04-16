@@ -39,8 +39,8 @@ class File extends Model
     /** Thumbnail image max height in pixels */
     protected int $thumbnailMaxHeight = 150;
 
-    /** Thumbnail format - \IMAGETYPE_PNG, \IMAGETYPE_JPEG and \IMAGETYPE_GIF are supported */
-    protected int $thumbnailFormat = \IMAGETYPE_PNG;
+    /** @var 'png'|'jpg'|'gif' Thumbnail format */
+    protected string $thumbnailFormat = 'png';
 
     /** In seconds, to prevent cleaning up unsaved forms */
     protected int $cleanupDraftsDelay = 2 * 24 * 3600;
