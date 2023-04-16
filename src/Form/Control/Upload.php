@@ -29,34 +29,8 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
     {
         // provision a new file for specified flysystem
         $model = $this->entityField->getField()->fileModel;
-        $entity = $model->newFile();
+        $entity = $model->createFromPath($file['tmp_name'], $file['name']);
 
-        // add (or upload) the file
-        $stream = fopen($file['tmp_name'], 'r+');
-        $this->entityField->getField()->flysystem->writeStream($entity->get('location'), $stream, ['visibility' => 'public']);
-        if (is_resource($stream)) {
-            fclose($stream);
-        }
-
-        $detector = new \League\MimeTypeDetection\FinfoMimeTypeDetector();
-
-        $mimeType = $detector->detectMimeTypeFromFile($file['tmp_name']);
-        // get meta from browser
-        $entity->set('meta_mime_type', $mimeType);
-
-        // store meta-information
-        $imageSizeArr = getimagesize($file['tmp_name']);
-        $entity->set('meta_is_image', $imageSizeArr !== false);
-        if ($imageSizeArr !== false) {
-            $entity->set('meta_image_width', $imageSizeArr[0]);
-            $entity->set('meta_image_height', $imageSizeArr[1]);
-        }
-
-        $entity->set('meta_md5', md5_file($file['tmp_name']));
-        $entity->set('meta_filename', $file['name']);
-        $entity->set('meta_size', $file['size']);
-
-        $entity->save();
         $this->setFileId($entity->get('token'));
 
         return null;
