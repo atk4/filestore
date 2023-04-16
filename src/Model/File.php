@@ -233,12 +233,12 @@ class File extends Model
 
                     break;
                 case 'jpg':
-                    imagejpeg($tmp, $thumbFile, 100); // 0=worst quality, 100=best quality
+                    imagejpeg($tmp, $thumbFile);
                     $ext = image_type_to_extension(\IMAGETYPE_JPEG);
 
                     break;
                 case 'png':
-                    imagepng($tmp, $thumbFile, 0); // 0=no compression, 9=max compression
+                    imagepng($tmp, $thumbFile);
                     $ext = image_type_to_extension(\IMAGETYPE_PNG);
 
                     break;
