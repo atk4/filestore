@@ -18,14 +18,26 @@ class File extends Model
     public const STATUS_DRAFT = 'draft';
     /** When file is linked to some other model */
     public const STATUS_LINKED = 'linked';
+    /** @const string Used for thumbnail files */
+    public const STATUS_THUMB = 'thumb';
     /** @const list<string> */
     public const ALL_STATUSES = [
         self::STATUS_DRAFT,
         self::STATUS_LINKED,
+        self::STATUS_THUMB,
     ];
 
     /** @var Filesystem */
     public $flysystem;
+
+    /** @bool Should we automatically create thumbnail for images */
+    public bool $createThumbnail = true;
+
+    /** @int Thumbnail image max width in pixels */
+    protected int $thumbnailMaxWidth = 150;
+
+    /** @int Thumbnail image max height in pixels */
+    protected int $thumbnailMaxHeight = 150;
 
     /** @int Delay in seconds used to avoid race condition when cleaning up draft records */
     protected int $cleanupDraftsDelay = 5;
@@ -37,6 +49,10 @@ class File extends Model
         $this->addField('token', ['system' => true, 'type' => 'string', 'required' => true]);
         $this->addField('location');
         $this->addField('url');
+
+        $this->hasOne('source_file_id', [ // this field can be used to link thumb images to source image
+            'model' => [self::class],
+        ]);
 
         $this->addField('status', [
             'enum' => self::ALL_STATUSES,
@@ -56,6 +72,25 @@ class File extends Model
         $this->onHook(Model::HOOK_BEFORE_SAVE, function (self $m, bool $isUpdate) {
             if ($isUpdate === false) {
                 $m->set('created_at', new \DateTime());
+            }
+        });
+
+        // change status of thumbs when status of original image changes
+        $this->onHook(Model::HOOK_AFTER_SAVE, function (self $m) {
+            if ($m->get('status') === self::STATUS_LINKED) {
+                $files = (clone $m->getModel())->addCondition('source_file_id', $m->getId());
+                foreach ($files as $file) {
+                    $file->set('status', self::STATUS_THUMB);
+                    $file->save();
+                }
+            }
+        });
+
+        // cascade-delete all related child files, for example, thumbnails
+        $this->onHook(Model::HOOK_BEFORE_DELETE, function (self $m) {
+            $files = (clone $m->getModel())->addCondition('source_file_id', $m->getId());
+            foreach ($files as $file) {
+                $file->delete();
             }
         });
 
@@ -132,7 +167,106 @@ class File extends Model
 
         $entity->save();
 
+        // create thumbnail images if needed and possible
+        if ($entity->get('meta_is_image') && $this->createThumbnail === true) {
+            $entity->createThumbnail($path);
+        }
+
         return $entity;
+    }
+
+    /**
+     * Create thumbnail images of current image.
+     *
+     * @param string $path Local path to original file
+     *
+     * @return bool True on success
+     */
+    public function createThumbnail(string $path): bool
+    {
+        $this->assertIsEntity();
+
+        $max_width = $this->thumbnailMaxWidth;
+        $max_height = $this->thumbnailMaxHeight;
+
+        [$width, $height, $image_type] = getimagesize($path);
+
+        switch ($image_type) {
+            case \IMAGETYPE_GIF:
+                $src = imagecreatefromgif($path);
+
+                break;
+            case \IMAGETYPE_JPEG:
+                $src = imagecreatefromjpeg($path);
+
+                break;
+            case \IMAGETYPE_PNG:
+                $src = imagecreatefrompng($path);
+
+                break;
+            default:
+                return false; // unsupported image type
+        }
+
+        $x_ratio = $max_width / $width;
+        $y_ratio = $max_height / $height;
+
+        if (($width <= $max_width) && ($height <= $max_height)) {
+            $tn_width = $width;
+            $tn_height = $height;
+        } elseif (($x_ratio * $height) < $max_height) {
+            $tn_height = (int) ceil($x_ratio * $height);
+            $tn_width = $max_width;
+        } else {
+            $tn_width = (int) ceil($y_ratio * $width);
+            $tn_height = $max_height;
+        }
+
+        $tmp = imagecreatetruecolor($tn_width, $tn_height);
+
+        // Check if this image is PNG or GIF, then set if Transparent
+        if ($image_type === \IMAGETYPE_PNG || $image_type === \IMAGETYPE_GIF) {
+            imagealphablending($tmp, false);
+            imagesavealpha($tmp, true);
+            $transparent = imagecolorallocatealpha($tmp, 255, 255, 255, 127);
+            imagefilledrectangle($tmp, 0, 0, $tn_width, $tn_height, $transparent);
+        }
+        imagecopyresampled($tmp, $src, 0, 0, 0, 0, $tn_width, $tn_height, $width, $height);
+
+        // create temporary thumb file
+        $thumbFile = tmpfile();
+        switch ($image_type) {
+            case \IMAGETYPE_GIF:
+                imagegif($tmp, $thumbFile);
+
+                break;
+            case \IMAGETYPE_JPEG:
+                imagejpeg($tmp, $thumbFile, 100); // best quality
+
+                break;
+            case \IMAGETYPE_PNG:
+                imagepng($tmp, $thumbFile, 0); // no compression
+
+                break;
+        }
+        $uri = stream_get_meta_data($thumbFile)['uri'];
+
+        // free up memory
+        imagedestroy($src);
+        imagedestroy($tmp);
+
+        // Import it in filestore and link to this (original image) entity
+        $ext = $this->get('meta_extension') ? '.' . $this->get('meta_extension') : '';
+        $thumbName = basename($this->get('meta_filename'), $ext) . '.thumb' . $ext;
+        $thumbModel = $this->getModel();
+        $thumbModel->createThumbnail = false; // do not create thumbnails of thumbnails
+        $thumbEntity = $thumbModel->createFromPath($uri, $thumbName);
+        $thumbEntity->save(['source_file_id' => $this->getId()]);
+
+        // close tmp file and it will be deleted
+        fclose($thumbFile);
+
+        return true;
     }
 
     /**
