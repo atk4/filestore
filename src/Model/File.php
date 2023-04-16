@@ -13,17 +13,17 @@ class File extends Model
 
     public ?string $titleField = 'meta_filename';
 
-    /** @const string All uploaded files first get this status */
+    /** All uploaded files first get this status */
     public const STATUS_DRAFT = 'draft';
-    /** @const string When file is linked to some other model */
+    /** When file is linked to some other model */
     public const STATUS_LINKED = 'linked';
-    /** @const array */
+    /** @const list<string> */
     public const ALL_STATUSES = [
         self::STATUS_DRAFT,
         self::STATUS_LINKED,
     ];
 
-    /** @var Filesystem */
+    /** @var Filesystem|null */
     public $flysystem;
 
     protected function init(): void
