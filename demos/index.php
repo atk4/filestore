@@ -62,7 +62,7 @@ $gr = Grid::addTo($c2, [
     'paginator' => false,
 ]);
 $files = new File($app->db, ['flysystem' => $filesystem]);
-$gr->menu->addItem('Cleanup Drafts')->on('click', function ($js) use ($gr, $files) {
+$gr->menu->addItem('Cleanup Drafts')->on('click', function () use ($gr, $files) {
     $files->cleanupDrafts();
 
     return $gr->jsReload();
