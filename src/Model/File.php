@@ -39,8 +39,8 @@ class File extends Model
     /** @int Thumbnail image max height in pixels */
     protected int $thumbnailMaxHeight = 150;
 
-    /** @int Delay in seconds used to avoid race condition when cleaning up draft records */
-    protected int $cleanupDraftsDelay = 5;
+    /** In seconds, to prevent cleaning up unsaved forms */
+    protected int $cleanupDraftsDelay = 2 * 24 * 3600;
 
     protected function init(): void
     {
@@ -272,20 +272,17 @@ class File extends Model
     /**
      * Useful method to clean up all draft files.
      * Can be called as user action or on schedule bases to clean up filestore repository.
-     *
-     * @return $this
      */
-    public function cleanupDrafts(): Model
+    public function cleanupDrafts(): void
     {
-        $m = $this->isEntity() ? $this->getModel() : $this;
+        $this->getPersistence()->atomic(function () {
+            $files = (clone $this)
+                ->addCondition('status', self::STATUS_DRAFT)
+                ->addCondition('created_at', '<', (new \DateTime())->sub(new \DateInterval('PT' . $this->cleanupDraftsDelay . 'S')));
 
-        $files = (clone $m)
-            ->addCondition('status', self::STATUS_DRAFT)
-            ->addCondition('created_at', '<', (new \DateTime())->sub(new \DateInterval('PT' . $this->cleanupDraftsDelay . 'S')));
-        foreach ($files as $file) {
-            $file->delete();
-        }
-
-        return $this;
+            foreach ($files as $file) {
+                $file->delete();
+            }
+        });
     }
 }

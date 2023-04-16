@@ -58,23 +58,15 @@ $form->onSubmit(function (Form $form) use ($app) {
 // list all filestore files
 $c2 = $columnsLayout->addColumn();
 Header::addTo($c2, ['All Filestore Files']);
-$gr = Crud::addTo($c2, [
+$gr = Grid::addTo($c2, [
     'paginator' => false,
 ]);
 $files = new File($app->db, ['flysystem' => $filesystem]);
-$files->removeUserAction('add');
-$files->removeUserAction('edit');
-$files->removeUserAction('delete');
-$files->addUserAction('cleanup_drafts', [
-    'callback' => function ($m) {
-        $m->cleanupDrafts();
+$gr->menu->addItem('Cleanup Drafts')->on('click', function () use ($gr, $files) {
+    $files->cleanupDrafts();
 
-        return 'Draft files are deleted.';
-        // return $gr->jsReload(); // @todo this way it's impossible?
-    },
-    'appliesTo' => Model\UserAction::APPLIES_TO_NO_RECORDS,
-    'description' => 'Cleanup Drafts',
-]);
+    return $gr->jsReload();
+});
 $gr->setModel($files);
 
 View::addTo($app, ['ui' => 'divider']);
