@@ -237,37 +237,39 @@ class File extends Model
         imagecopyresampled($tmp, $src, 0, 0, 0, 0, $tn_width, $tn_height, $width, $height);
 
         // create temporary thumb file
-        $thumbFile = tmpfile();
-        switch ($this->thumbnailFormat) {
-            case \IMAGETYPE_GIF:
-                imagegif($tmp, $thumbFile);
+        try {
+            $thumbFile = tmpfile();
+            switch ($this->thumbnailFormat) {
+                case \IMAGETYPE_GIF:
+                    imagegif($tmp, $thumbFile);
 
-                break;
-            case \IMAGETYPE_JPEG:
-                imagejpeg($tmp, $thumbFile, 100); // best quality
+                    break;
+                case \IMAGETYPE_JPEG:
+                    imagejpeg($tmp, $thumbFile, 100); // best quality
 
-                break;
-            case \IMAGETYPE_PNG:
-                imagepng($tmp, $thumbFile, 0); // no compression
+                    break;
+                case \IMAGETYPE_PNG:
+                    imagepng($tmp, $thumbFile, 0); // no compression
 
-                break;
+                    break;
+            }
+            $uri = stream_get_meta_data($thumbFile)['uri'];
+
+            // free up memory
+            imagedestroy($src);
+            imagedestroy($tmp);
+
+            // Import it in filestore and link to this (original image) entity
+            $ext = image_type_to_extension($this->thumbnailFormat);
+            $thumbName = basename($this->get('meta_filename'), $ext) . '.thumb' . $ext;
+            $thumbModel = $this->getModel();
+            $thumbModel->createThumbnail = false; // do not create thumbnails of thumbnails
+            $thumbEntity = $thumbModel->createFromPath($uri, $thumbName);
+            $thumbEntity->save(['source_file_id' => $this->getId()]);
+        } finally {
+            // close tmp file and it will be deleted
+            fclose($thumbFile);
         }
-        $uri = stream_get_meta_data($thumbFile)['uri'];
-
-        // free up memory
-        imagedestroy($src);
-        imagedestroy($tmp);
-
-        // Import it in filestore and link to this (original image) entity
-        $ext = image_type_to_extension($this->thumbnailFormat);
-        $thumbName = basename($this->get('meta_filename'), $ext) . '.thumb' . $ext;
-        $thumbModel = $this->getModel();
-        $thumbModel->createThumbnail = false; // do not create thumbnails of thumbnails
-        $thumbEntity = $thumbModel->createFromPath($uri, $thumbName);
-        $thumbEntity->save(['source_file_id' => $this->getId()]);
-
-        // close tmp file and it will be deleted
-        fclose($thumbFile);
 
         return true;
     }
