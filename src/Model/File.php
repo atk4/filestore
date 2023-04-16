@@ -135,10 +135,6 @@ class File extends Model
         return $entity;
     }
 
-    /**
-     * Useful method to clean up all draft files.
-     * Can be called as user action or on schedule bases to clean up filestore repository.
-     */
     public function cleanupDrafts(): void
     {
         $this->assertIsModel();
