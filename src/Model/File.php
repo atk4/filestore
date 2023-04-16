@@ -63,7 +63,7 @@ class File extends Model
         // delete physical file from storage after we delete DB record
         $this->onHook(Model::HOOK_AFTER_DELETE, function (self $m) {
             $path = $m->get('location');
-            if ($path && $m->flysystem && $m->flysystem->fileExists($path)) { // @phpstan-ignore-line
+            if ($path && $m->flysystem && $m->flysystem->fileExists($path)) {
                 $m->flysystem->delete($path);
             }
         });
