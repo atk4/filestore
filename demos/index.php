@@ -62,9 +62,6 @@ $gr = Grid::addTo($c2, [
     'paginator' => false,
 ]);
 $files = new File($app->db, ['flysystem' => $filesystem]);
-$files->removeUserAction('add');
-$files->removeUserAction('edit');
-$files->removeUserAction('delete');
 $gr->setModel($files);
 
 View::addTo($app, ['ui' => 'divider']);
