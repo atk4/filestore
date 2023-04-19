@@ -248,7 +248,7 @@ class File extends Model
 
             // save thumbnail
             $thumbName = basename($this->get('meta_filename'), $this->thumbnailFormat) . '.thumb' . $this->thumbnailFormat;
-            $thumbModel = $this->getModel();
+            $thumbModel = clone $this->getModel();
             $thumbModel->createThumbnail = false; // do not create thumbnails of thumbnails
             $thumbEntity = $thumbModel->createFromPath($uri, $thumbName);
             $thumbEntity->save(['source_file_id' => $this->getId()]);
