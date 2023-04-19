@@ -7,6 +7,8 @@ namespace Atk4\Filestore\Model;
 use Atk4\Data\Model;
 use League\Flysystem\Filesystem;
 use League\MimeTypeDetection\FinfoMimeTypeDetector;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Psr\Http\Message\StreamInterface;
 
 class File extends Model
 {
@@ -252,7 +254,7 @@ class File extends Model
             $uri = stream_get_meta_data($thumbFile)['uri'];
 
             // save thumbnail
-            $thumbName = basename($this->get('meta_filename'), $this->thumbnailFormat) . '.thumb' . $this->thumbnailFormat;
+            $thumbName = basename($this->get('meta_filename')) . '.thumb' . $this->thumbnailFormat;
             $thumbModel = clone $this->getModel();
             $thumbModel->createThumbnail = false; // do not create thumbnails of thumbnails
             $thumbEntity = $thumbModel->createFromPath($uri, $thumbName);
@@ -262,6 +264,17 @@ class File extends Model
         }
 
         return true;
+    }
+
+    public function getStream(): StreamInterface
+    {
+        $this->assertIsEntity();
+
+        $path = $this->get('location');
+        $resource = $this->flysystem->readStream($path);
+        $stream = (new Psr17Factory())->createStreamFromResource($resource);
+
+        return $stream;
     }
 
     /**
