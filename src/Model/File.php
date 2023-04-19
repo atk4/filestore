@@ -72,6 +72,11 @@ class File extends Model
         $this->addField('meta_image_width', ['type' => 'integer']);
         $this->addField('meta_image_height', ['type' => 'integer']);
 
+        $this->hasMany('RelatedFiles', [
+            'model' => [static::class],
+            'theirField' => 'source_file_id',
+        ]);
+
         $this->onHookShort(Model::HOOK_BEFORE_SAVE, function (bool $isUpdate) {
             if (!$isUpdate) {
                 $this->set('created_at', new \DateTime());
