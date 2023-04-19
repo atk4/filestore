@@ -6,7 +6,6 @@ namespace Atk4\Filestore;
 
 use Atk4\Filestore\Model\File;
 use Atk4\Ui\App;
-use Nyholm\Psr7\Factory\Psr17Factory;
 
 class Helper
 {
