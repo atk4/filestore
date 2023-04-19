@@ -40,7 +40,7 @@ $filesystem = new Filesystem($adapter);
 $columnsLayout = Columns::addTo($app);
 
 // new friend form
-$c1 = $columnsLayout->addColumn();
+$c1 = $columnsLayout->addColumn(6);
 Header::addTo($c1, ['Add New Friend']);
 $form = Form::addTo($c1);
 $form->setModel(
@@ -56,7 +56,7 @@ $form->onSubmit(function (Form $form) use ($app) {
 });
 
 // list all filestore files
-$c2 = $columnsLayout->addColumn();
+$c2 = $columnsLayout->addColumn(10);
 Header::addTo($c2, ['All Filestore Files']);
 $gr = Grid::addTo($c2, [
     'paginator' => false,
