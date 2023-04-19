@@ -53,8 +53,8 @@ class File extends Model
         $this->addField('location');
         $this->addField('url');
 
-        $this->hasOne('source_file_id', [ // this field can be used to link thumb images to source image
-            'model' => [self::class],
+        $this->hasOne('source_file_id', [
+            'model' => [static::class],
         ]);
 
         $this->addField('status', [
@@ -73,7 +73,7 @@ class File extends Model
         $this->addField('meta_image_height', ['type' => 'integer']);
 
         $this->onHook(Model::HOOK_BEFORE_SAVE, function (self $m, bool $isUpdate) {
-            if ($isUpdate === false) {
+            if (!$isUpdate) {
                 $m->set('created_at', new \DateTime());
             }
         });
@@ -171,7 +171,7 @@ class File extends Model
         $entity->save();
 
         // create thumbnail images if needed and possible
-        if ($entity->get('meta_is_image') && $this->createThumbnail === true) {
+        if ($entity->get('meta_is_image') && $this->createThumbnail) {
             $entity->createThumbnail($path);
         }
 
@@ -189,8 +189,8 @@ class File extends Model
     {
         $this->assertIsEntity();
 
-        $max_width = $this->thumbnailMaxWidth;
-        $max_height = $this->thumbnailMaxHeight;
+        $maxWidth = $this->thumbnailMaxWidth;
+        $maxHeight = $this->thumbnailMaxHeight;
 
         $src = imagecreatefromstring(file_get_contents($path));
         if ($src === false) {
@@ -198,67 +198,61 @@ class File extends Model
         }
 
         [$width, $height] = getimagesize($path);
-        $x_ratio = $max_width / $width;
-        $y_ratio = $max_height / $height;
+        $xRatio = $maxWidth / $width;
+        $yRatio = $maxHeight / $height;
 
-        if (($width <= $max_width) && ($height <= $max_height)) {
-            $tn_width = $width;
-            $tn_height = $height;
-        } elseif (($x_ratio * $height) < $max_height) {
-            $tn_height = (int) ceil($x_ratio * $height);
-            $tn_width = $max_width;
+        if ($width <= $maxWidth && $height <= $maxHeight) {
+            $tnWidth = $width;
+            $tnHeight = $height;
+        } elseif ($xRatio * $height < $maxHeight) {
+            $tnHeight = (int) round($xRatio * $height);
+            $tnWidth = $maxWidth;
         } else {
-            $tn_width = (int) ceil($y_ratio * $width);
-            $tn_height = $max_height;
+            $tnWidth = (int) round($yRatio * $width);
+            $tnHeight = $maxHeight;
         }
 
-        $tmp = imagecreatetruecolor($tn_width, $tn_height);
+        $tmp = imagecreatetruecolor($tnWidth, $tnHeight);
 
-        // Check if this image is PNG or GIF, then set if Transparent
+        // check if this image is PNG or GIF, then set if Transparent
         if ($this->thumbnailFormat === 'png' || $this->thumbnailFormat === 'gif') {
             imagealphablending($tmp, false);
             imagesavealpha($tmp, true);
-            $transparent = imagecolorallocatealpha($tmp, 255, 255, 255, 127);
-            imagefilledrectangle($tmp, 0, 0, $tn_width, $tn_height, $transparent);
+            imagefilledrectangle($tmp, 0, 0, $tnWidth, $tnHeight, imagecolorallocatealpha($tmp, 255, 255, 255, 127));
         }
-        imagecopyresampled($tmp, $src, 0, 0, 0, 0, $tn_width, $tn_height, $width, $height);
+        imagecopyresampled($tmp, $src, 0, 0, 0, 0, $tnWidth, $tnHeight, $width, $height);
 
         // create temporary thumb file
+        $thumbFile = tmpfile();
         try {
-            $thumbFile = tmpfile();
             switch ($this->thumbnailFormat) {
                 case 'gif':
                     imagegif($tmp, $thumbFile);
-                    $ext = image_type_to_extension(\IMAGETYPE_GIF);
 
                     break;
                 case 'jpg':
                     imagejpeg($tmp, $thumbFile);
-                    $ext = image_type_to_extension(\IMAGETYPE_JPEG);
 
                     break;
                 case 'png':
                     imagepng($tmp, $thumbFile);
-                    $ext = image_type_to_extension(\IMAGETYPE_PNG);
 
                     break;
                 default:
                     return false; // unsupported thumbnail format
             }
-            $uri = stream_get_meta_data($thumbFile)['uri'];
-
-            // free up memory
             imagedestroy($src);
             imagedestroy($tmp);
 
-            // Import it in filestore and link to this (original image) entity
-            $thumbName = basename($this->get('meta_filename'), $ext) . '.thumb' . $ext;
+            $uri = stream_get_meta_data($thumbFile)['uri'];
+
+            // save thumbnail
+            $thumbName = basename($this->get('meta_filename'), $this->thumbnailFormat) . '.thumb' . $this->thumbnailFormat;
             $thumbModel = $this->getModel();
             $thumbModel->createThumbnail = false; // do not create thumbnails of thumbnails
             $thumbEntity = $thumbModel->createFromPath($uri, $thumbName);
             $thumbEntity->save(['source_file_id' => $this->getId()]);
         } finally {
-            // close tmp file and it will be deleted
             fclose($thumbFile);
         }
 
