@@ -50,8 +50,8 @@ class File extends Model
         parent::init();
 
         $this->addField('token', ['system' => true, 'type' => 'string', 'required' => true]);
-        $this->addField('location');
-        $this->addField('url');
+        $this->addField('location', ['caption' => 'Location']);
+        $this->addField('url', ['caption' => 'URL']);
 
         $this->hasOne('source_file_id', [
             'model' => [static::class],
@@ -61,18 +61,19 @@ class File extends Model
             'enum' => self::ALL_STATUSES,
             'default' => self::STATUS_DRAFT,
         ]);
-        $this->addField('created_at', ['type' => 'datetime', 'required' => true]);
+        $this->addField('created_at', ['type' => 'datetime', 'required' => true, 'caption' => 'Created']);
 
-        $this->addField('meta_filename');
-        $this->addField('meta_extension');
-        $this->addField('meta_md5');
-        $this->addField('meta_mime_type');
-        $this->addField('meta_size', ['type' => 'integer']);
-        $this->addField('meta_is_image', ['type' => 'boolean']);
-        $this->addField('meta_image_width', ['type' => 'integer']);
-        $this->addField('meta_image_height', ['type' => 'integer']);
+        $this->addField('meta_filename', ['caption' => 'Filename']);
+        $this->addField('meta_extension', ['caption' => 'Extension']);
+        $this->addField('meta_md5', ['caption' => 'MD5']);
+        $this->addField('meta_mime_type', ['caption' => 'Mime-Type']);
+        $this->addField('meta_size', ['type' => 'integer', 'caption' => 'Size']);
+        $this->addField('meta_is_image', ['type' => 'boolean', 'caption' => 'Is Image']);
+        $this->addField('meta_image_width', ['type' => 'integer', 'caption' => 'Image Width']);
+        $this->addField('meta_image_height', ['type' => 'integer', 'caption' => 'Image Height']);
 
         $this->hasMany('RelatedFiles', [
+            'caption' => 'Related Files',
             'model' => [static::class],
             'theirField' => 'source_file_id',
         ]);
