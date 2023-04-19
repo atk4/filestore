@@ -268,8 +268,6 @@ class File extends Model
 
     public function getStream(): StreamInterface
     {
-        $this->assertIsEntity();
-
         $path = $this->get('location');
         $resource = $this->flysystem->readStream($path);
         $stream = (new Psr17Factory())->createStreamFromResource($resource);
