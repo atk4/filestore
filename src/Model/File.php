@@ -72,16 +72,16 @@ class File extends Model
         $this->addField('meta_image_width', ['type' => 'integer']);
         $this->addField('meta_image_height', ['type' => 'integer']);
 
-        $this->onHook(Model::HOOK_BEFORE_SAVE, function (self $m, bool $isUpdate) {
+        $this->onHookShort(Model::HOOK_BEFORE_SAVE, function (bool $isUpdate) {
             if (!$isUpdate) {
-                $m->set('created_at', new \DateTime());
+                $this->set('created_at', new \DateTime());
             }
         });
 
         // change status of thumbs when status of original image changes
-        $this->onHook(Model::HOOK_AFTER_SAVE, function (self $m) {
-            if ($m->get('status') === self::STATUS_LINKED) {
-                $files = (clone $m->getModel())->addCondition('source_file_id', $m->getId());
+        $this->onHookShort(Model::HOOK_AFTER_SAVE, function () {
+            if ($this->get('status') === self::STATUS_LINKED) {
+                $files = (clone $this->getModel())->addCondition('source_file_id', $this->getId());
                 foreach ($files as $file) {
                     $file->set('status', self::STATUS_THUMB);
                     $file->save();
@@ -90,18 +90,18 @@ class File extends Model
         });
 
         // cascade-delete all related child files, for example, thumbnails
-        $this->onHook(Model::HOOK_BEFORE_DELETE, function (self $m) {
-            $files = (clone $m->getModel())->addCondition('source_file_id', $m->getId());
+        $this->onHookShort(Model::HOOK_BEFORE_DELETE, function () {
+            $files = (clone $this->getModel())->addCondition('source_file_id', $this->getId());
             foreach ($files as $file) {
                 $file->delete();
             }
         });
 
         // delete physical file from storage after we delete DB record
-        $this->onHook(Model::HOOK_AFTER_DELETE, function (self $m) {
-            $path = $m->get('location');
-            if ($path && $m->flysystem->fileExists($path)) {
-                $m->flysystem->delete($path);
+        $this->onHookShort(Model::HOOK_AFTER_DELETE, function () {
+            $path = $this->get('location');
+            if ($path && $this->flysystem->fileExists($path)) {
+                $this->flysystem->delete($path);
             }
         });
     }
