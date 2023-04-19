@@ -23,6 +23,7 @@ $fileModel = new Model($db, ['table' => 'filestore_file']);
 $fileModel->addField('token', ['required' => true]);
 $fileModel->addField('location', ['type' => 'text']);
 $fileModel->addField('url', ['type' => 'text']);
+$fileModel->addField('source_file_id', ['type' => 'integer']);
 $fileModel->addField('status');
 $fileModel->addField('created_at', ['type' => 'datetime', 'required' => true]);
 $fileModel->addField('meta_filename');
