@@ -15,11 +15,7 @@ class Helper
      */
     protected static function terminate(File $model, App $app): void
     {
-        $path = $model->get('location');
-        $resource = $model->flysystem->readStream($path);
-        $stream = (new Psr17Factory())->createStreamFromResource($resource);
-
-        $app->terminate($stream);
+        $app->terminate($model->getStream());
     }
 
     /**
