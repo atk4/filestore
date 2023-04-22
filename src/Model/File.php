@@ -254,7 +254,7 @@ class File extends Model
             $uri = stream_get_meta_data($thumbFile)['uri'];
 
             // save thumbnail
-            $thumbName = basename($this->get('meta_filename')) . '.thumb' . $this->thumbnailFormat;
+            $thumbName = basename($this->get('meta_filename')) . '.thumb.' . $this->thumbnailFormat;
             $thumbModel = clone $this->getModel();
             $thumbModel->createThumbnail = false; // do not create thumbnails of thumbnails
             $thumbEntity = $thumbModel->createFromPath($uri, $thumbName);
