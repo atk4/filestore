@@ -26,7 +26,7 @@ Files can be uploaded directly in your CRUD and you can have several file fields
 ![upload1](docs/images/crud.png)
 
 In your main table you only need one `varchar` field to store file token. If you use SQL, you can have instant access to
-additional fields such as public URL (if available), name of original file or more:
+additional fields such name of original file or more:
 
 ![upload1](docs/images/refs.png)
 
@@ -129,9 +129,6 @@ $this->addField('file_id', [
     'onDetach' => function ($file) {
         // $file is a model object
     },
-
-    // If you define this, this field will be created in your model and will contain url
-    'urlField' => 'file_url',
 ])
 ```
 
@@ -158,10 +155,7 @@ $this->addField('picture_id', [
         // do something with file
     },
 
-    // This will store full-sized image URL. You can disable if you set to: false
-    'urlField' => 'picture_url',
-
-    // Cropping table
+    // cropping table
     'crop' => [
         'medium' => [200, 300], // width, height
         'small' => [50, 50],
@@ -175,8 +169,6 @@ either "imagick" or "gd" for the operation. Arguments are defined like that:
 - `0 => 200`, width
 - `1 => height`, height
 - `'type' => 'jpeg'`  optional. Defaults to 'png'
-- `'urlField' => 'custom_url_field'`, optional. Defaults to `picture_medium_url` combined from original field name, key of
-  cropping table item and "_url".
 
 In order to store thumbnails, filestore will create additional file(s) inside `File` table.
 
@@ -187,7 +179,6 @@ each uploaded file it stores:
 
 - file_token - generated randomly, used on a form to pass back to submission handler
 - location - (used to identify file in Flysystem. Generated randomly)
-- url - (if file is stored with a public URL accessible, stores it here)
 - storage - (short info on the storage used)
 - source_file_id (specify ID of the original file. Used for thumbnails or other generated files)
 - status (defines where is file currently)
@@ -211,12 +202,6 @@ $file->import('path/to/file.txt');
 
 Manually import file. This will also upload file to `flysystem` and save. Technically Upload field simply calls this,
 while also setting
-
-``` php
-$file->verify();
-```
-
-Compare MD5 of `url` with the recorded one, returns true if file is un-changed.
 
 ``` php
 $path = $file->getFile();
