@@ -26,7 +26,7 @@ Files can be uploaded directly in your CRUD and you can have several file fields
 ![upload1](docs/images/crud.png)
 
 In your main table you only need one `varchar` field to store file token. If you use SQL, you can have instant access to
-additional fields such name of original file or more:
+additional fields such as name of original file or more:
 
 ![upload1](docs/images/refs.png)
 
@@ -197,17 +197,23 @@ Several "meta" fields are also defined which describe contents of the file
 ### Methods
 
 ``` php
-$file->import('path/to/file.txt');
+$file->createFromPath('path/to/file.txt', 'my_file.txt');
 ```
 
-Manually import file. This will also upload file to `flysystem` and save. Technically Upload field simply calls this,
-while also setting
+Manually import file. This will also upload file to `flysystem` and save. Technically Upload field simply calls this.
+In second method argument you can pass original file name to save.
 
 ``` php
-$path = $file->getFile();
+$stream = $file->getStream();
 ```
 
-Fetches the file into local system and will return path.
+Returns stream of file contents. You can cast `$stream` to string or call `$stream->getContents()` to fetch all file contents as a strring.
+
+``` php
+$file->verify();
+```
+
+Compare MD5 of file contents with the recorded one, returns true if file is un-changed.
 
 ## Roadmap
 
