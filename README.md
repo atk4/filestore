@@ -200,20 +200,13 @@ Several "meta" fields are also defined which describe contents of the file
 $file->createFromPath('path/to/file.txt', 'my_file.txt');
 ```
 
-Manually import file. This will also upload file to `flysystem` and save. Technically Upload field simply calls this.
-In second method argument you can pass original file name to save.
+Create a `File` entity, save the data to `flysystem` and save the entity.
 
 ``` php
 $stream = $file->getStream();
 ```
 
-Returns stream of file contents. You can cast `$stream` to string or call `$stream->getContents()` to fetch all file contents as a string.
-
-``` php
-$file->verify();
-```
-
-Compare MD5 of file contents with the recorded one, returns true if file is un-changed.
+Returns stream of file contents. You can call `$stream->getContents()` to fetch the file content as a string.
 
 ## Roadmap
 
