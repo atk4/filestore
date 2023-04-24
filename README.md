@@ -96,11 +96,11 @@ If you have a Model such as `Friend` and you wish to upload friend's photo, File
 
 ```php
 // in Friend::init();
-$this->addField('photo_file_id', [\Atk4\Filestore\Field\FileField::class]);
+$this->addField('photo_file_token', [\Atk4\Filestore\Field\FileField::class]);
 ```
 
-This field will automatically appear on the form as an upload field, but in the database will be storing "id" from the "
-File" model. You can even define multiple fields like that.
+This field will automatically appear on the form as an upload field, but in the database will be storing "token" from
+the "File" model. You can even define multiple fields like that.
 
 By default the local file storage will be used, but you can configure a different location simply by passing into your
 field:
