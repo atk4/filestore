@@ -207,7 +207,7 @@ In second method argument you can pass original file name to save.
 $stream = $file->getStream();
 ```
 
-Returns stream of file contents. You can cast `$stream` to string or call `$stream->getContents()` to fetch all file contents as a strring.
+Returns stream of file contents. You can cast `$stream` to string or call `$stream->getContents()` to fetch all file contents as a string.
 
 ``` php
 $file->verify();
