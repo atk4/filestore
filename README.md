@@ -96,7 +96,7 @@ If you have a Model such as `Friend` and you wish to upload friend's photo, File
 
 ```php
 // in Friend::init();
-$this->addField('file_id', [\Atk4\Filestore\Field\FileField::class]);
+$this->addField('photo', [\Atk4\Filestore\Field\FileField::class]);
 ```
 
 This field will automatically appear on the form as an upload field, but in the database will be storing "id" from the "
@@ -106,7 +106,7 @@ By default the local file storage will be used, but you can configure a differen
 field:
 
 ``` php
-$this->addField('file_id', [
+$this->addField('photo', [
     \Atk4\Filestore\Field\FileField::class,
     // specify if you want to only accept certain types of files or extensions.
     'onlyTypes' => ['image/*', 'application/x-pdf'],
