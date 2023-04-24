@@ -32,8 +32,6 @@ class FileField extends Field
     public $reference;
     /** @var Field */
     public $fieldFilename;
-    /** @var Field */
-    public $fieldUrl;
 
     protected function init(): void
     {
@@ -89,7 +87,6 @@ class FileField extends Field
 
     protected function importFields(): void
     {
-        $this->fieldUrl = $this->reference->addField($this->fieldNameBase . '_url', 'url');
         $this->fieldFilename = $this->reference->addField($this->fieldNameBase . '_filename', 'meta_filename');
     }
 }

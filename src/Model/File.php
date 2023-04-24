@@ -53,7 +53,6 @@ class File extends Model
 
         $this->addField('token', ['system' => true, 'type' => 'string', 'required' => true]);
         $this->addField('location');
-        $this->addField('url');
 
         $this->hasOne('source_file_id', [
             'model' => [static::class],
