@@ -106,7 +106,7 @@ By default the local file storage will be used, but you can configure a differen
 field:
 
 ``` php
-$this->addField('photo', [
+$this->addField('photo_file_token', [
     \Atk4\Filestore\Field\FileField::class,
     // specify if you want to only accept certain types of files or extensions.
     'onlyTypes' => ['image/*', 'application/x-pdf'],
