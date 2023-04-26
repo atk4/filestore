@@ -38,7 +38,6 @@ $fileModel->addField('meta_image_height', ['type' => 'integer']);
 
 $friendModel = new Model($db, ['table' => 'friend']);
 $friendModel->addField('name', ['required' => true]);
-$friendModel->addField('file_id', ['type' => 'integer']);
 $friendModel->addField('file');
 $friendModel->addField('file2');
 
