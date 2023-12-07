@@ -28,12 +28,12 @@
     ],
     "homepage": "https://github.com/atk4/filestore",
     "require": {
-        "php": ">=7.4 <8.3",
+        "php": ">=7.4 <8.4",
         "atk4/ui": "dev-develop",
         "league/flysystem": "^2.0"
     },
     "require-release": {
-        "php": ">=7.4 <8.3",
+        "php": ">=7.4 <8.4",
         "atk4/ui": "~5.0.0",
         "league/flysystem": "^2.0"
     },
