@@ -43,6 +43,7 @@ class FileField extends Field
         }
 
         $this->reference = HasOneSql::assertInstanceOf($this->getOwner()->hasOne($this->shortName, [
+            'type' => $this->fileModel->getField('token')->type, // TODO imply in https://github.com/atk4/data/blob/develop/src/Reference/HasOne.php#L27
             'model' => $this->fileModel,
             'theirField' => 'token',
         ]));

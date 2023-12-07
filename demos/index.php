@@ -49,7 +49,7 @@ $form->setModel(
     ]))->createEntity()
 );
 
-$form->onSubmit(function (Form $form) use ($app) {
+$form->onSubmit(static function (Form $form) use ($app) {
     $form->model->save();
 
     return $app->layout->jsReload();
@@ -62,7 +62,7 @@ $gr = Grid::addTo($c2, [
     'paginator' => false,
 ]);
 $files = new File($app->db, ['flysystem' => $filesystem]);
-$gr->menu->addItem('Cleanup Drafts')->on('click', function () use ($gr, $files) {
+$gr->menu->addItem('Cleanup Drafts')->on('click', static function () use ($gr, $files) {
     $files->cleanupDrafts();
 
     return $gr->jsReload();
@@ -78,7 +78,7 @@ $crud->setModel(new Friend($app->db, ['filesystem' => $filesystem]));
 
 // custom actions
 $callbackDownload = Callback::addTo($app);
-$callbackDownload->set(function () use ($crud) {
+$callbackDownload->set(static function () use ($crud) {
     $id = $crud->getApp()->stickyGet('row_id');
     $model = (clone $crud->model);
     $model_file = File::assertInstanceOf($model->load($id)->ref('file'));
@@ -94,7 +94,7 @@ $crud->addActionButton(
 );
 
 $callbackView = Callback::addTo($app);
-$callbackView->set(function () use ($crud) {
+$callbackView->set(static function () use ($crud) {
     $id = $crud->getApp()->stickyGet('row_id');
     $model = (clone $crud->model);
     $model_file = File::assertInstanceOf($model->load($id)->ref('file'));
