@@ -43,6 +43,7 @@ class FileField extends Field
         }
 
         $this->reference = HasOneSql::assertInstanceOf($this->getOwner()->hasOne($this->shortName, [
+            'type' => $this->fileModel->getField('token')->type,
             'model' => $this->fileModel,
             'theirField' => 'token',
         ]));
