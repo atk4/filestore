@@ -106,10 +106,12 @@ class File extends Model
         // delete physical file from storage after we delete DB record - only if no other tokens refer to same file
         $this->onHookShort(Model::HOOK_AFTER_DELETE, function () {
             $path = $this->get('location');
-            $files = (clone $this->getModel())->addCondition('id', '!=', $this->getId())->addCondition('location', $path);
-
-            if ($files->tryLoadAny() == null  && $path && $this->flysystem->fileExists($path)) {
-                $this->flysystem->delete($path);
+            if ($path && $this->flysystem->fileExists($path)) {
+                $files = (clone $this->getModel())->addCondition('id', '!=',
+                    $this->getId())->addCondition('location', $path);
+                if ($files->tryLoadAny() == null) {
+                    $this->flysystem->delete($path);
+                }
             }
         });
     }
