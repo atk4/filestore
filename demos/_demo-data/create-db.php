@@ -35,6 +35,8 @@ $fileModel->addField('meta_image_width', ['type' => 'integer']);
 $fileModel->addField('meta_image_height', ['type' => 'integer']);
 
 (new Migrator($fileModel))->create();
+(new Migrator($fileModel))->createIndex([$fileModel->getField('token')], true);
+(new Migrator($fileModel))->createIndex([$fileModel->getField('location')], false);
 
 $friendModel = new Model($db, ['table' => 'friend']);
 $friendModel->addField('name', ['required' => true]);
