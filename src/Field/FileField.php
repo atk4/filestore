@@ -66,12 +66,12 @@ class FileField extends Field
 
                 // remove old file, we don't need it
                 if ($old) {
-                    $m->refModel($this->shortName)->loadBy('token', $old)->delete();
+                    $m->getModel()->getReference($this->shortName)->createTheirModel()->loadBy('token', $old)->delete();
                 }
 
                 // mark new file as linked
                 if ($new) {
-                    $m->refModel($this->shortName)->loadBy('token', $new)->save(['status' => File::STATUS_LINKED]);
+                    $m->getModel()->getReference($this->shortName)->createTheirModel()->loadBy('token', $new)->save(['status' => File::STATUS_LINKED]);
                 }
             }
         };
@@ -81,7 +81,7 @@ class FileField extends Field
         $this->onHookToOwnerEntity(Model::HOOK_AFTER_DELETE, function (Model $m) {
             $token = $m->get($this->shortName);
             if ($token) {
-                $m->refModel($this->shortName)->loadBy('token', $token)->delete();
+                $m->getModel()->getReference($this->shortName)->createTheirModel()->loadBy('token', $token)->delete();
             }
         });
     }
