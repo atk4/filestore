@@ -79,15 +79,15 @@ $callbackDownload->set(static function () use ($crud) {
 });
 
 $crud->addActionButton(
-    ['icon' => 'download'],
+    ['icon' => ['download', 'attr' => ['title' => 'Download Photo']]],
     new JsExpression(
         'document.location = [] + \'&row_id=\' + []',
         [$callbackDownload->getJsUrl(), $crud->table->jsRow()->data('id')]
     )
 );
 
-$callbackView = Callback::addTo($app);
-$callbackView->set(static function () use ($crud) {
+$callbackShow = Callback::addTo($app);
+$callbackShow->set(static function () use ($crud) {
     $id = $crud->getApp()->stickyGet('row_id');
     $model = (clone $crud->model);
     $model_file = File::assertInstanceOf($model->load($id)->ref('file1'));
@@ -95,20 +95,20 @@ $callbackView->set(static function () use ($crud) {
 });
 
 $crud->addActionButton(
-    ['icon' => 'image'],
+    ['icon' => ['image', 'attr' => ['title' => 'Show Photo']]],
     new JsExpression(
         'document.location = [] + \'&row_id=\' + []',
-        [$callbackView->getJsUrl(), $crud->table->jsRow()->data('id')]
+        [$callbackShow->getJsUrl(), $crud->table->jsRow()->data('id')]
     )
 );
 
-// list all filestore files
+// list all filestore files in another tab
 $gr = Grid::addTo($t2, [
     'paginator' => false,
 ]);
 $files = new File($app->db, ['flysystem' => $filesystem]);
 $gr->menu->addItem('Cleanup Drafts')->on('click', static function () use ($gr, $files) {
-    $files->cleanupDrafts();
+    $files->cleanupDrafts(60);
 
     return $gr->jsReload();
 });
