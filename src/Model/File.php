@@ -16,13 +16,13 @@ class File extends Model
 
     public ?string $titleField = 'meta_filename';
 
-    /** @const string All uploaded files first get this status */
+    /** All uploaded files first get this status */
     public const STATUS_DRAFT = 'draft';
-    /** @const string When file is linked to some other model */
+    /** When file is linked to some other model */
     public const STATUS_LINKED = 'linked';
-    /** @const string Used for thumbnail files */
+    /** Used for thumbnail files */
     public const STATUS_THUMB = 'thumb';
-    /** @const list<string> */
+    /** List of all statuses */
     public const ALL_STATUSES = [
         self::STATUS_DRAFT,
         self::STATUS_LINKED,
@@ -41,7 +41,7 @@ class File extends Model
     /** Thumbnail image max height in pixels */
     protected int $thumbnailMaxHeight = 150;
 
-    /** Thumbnail format - supported are png, jpg, gif */
+    /** @var 'png'|'jpg'|'gif' Thumbnail format */
     protected string $thumbnailFormat = 'png';
 
     /** Draft files deleting delay in seconds, to prevent cleaning up unsaved forms */
