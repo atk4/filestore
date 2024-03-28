@@ -24,6 +24,10 @@
         {
             "name": "Michael Voříšek",
             "homepage": "https://mvorisek.cz/"
+        },
+        {
+            "name": "Imants Horsts",
+            "homepage": "http://darkside.lv/"
         }
     ],
     "homepage": "https://github.com/atk4/filestore",

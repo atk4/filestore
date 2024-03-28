@@ -16,9 +16,9 @@ class File extends Model
 
     public ?string $titleField = 'meta_filename';
 
-    /** All uploaded files first get this status */
+    /** @const string All uploaded files first get this status */
     public const STATUS_DRAFT = 'draft';
-    /** When file is linked to some other model */
+    /** @const string When file is linked to some other model */
     public const STATUS_LINKED = 'linked';
     /** @const string Used for thumbnail files */
     public const STATUS_THUMB = 'thumb';
@@ -41,11 +41,11 @@ class File extends Model
     /** Thumbnail image max height in pixels */
     protected int $thumbnailMaxHeight = 150;
 
-    /** @var 'png'|'jpg'|'gif' Thumbnail format */
+    /** Thumbnail format - supported are png, jpg, gif */
     protected string $thumbnailFormat = 'png';
 
-    /** In seconds, to prevent cleaning up unsaved forms */
-    protected int $cleanupDraftsDelay = 2 * 24 * 3600;
+    /** Draft files deleting delay in seconds, to prevent cleaning up unsaved forms */
+    protected int $draftsCleanupDelay = 2 * 24 * 3600;
 
     protected function init(): void
     {
@@ -103,13 +103,17 @@ class File extends Model
             }
         });
 
-        // delete physical file from storage after we delete DB record - only if no other tokens refer to same file
+        // delete physical file from storage after we delete DB record - only if no other tokens refer to same file.
+        // NOTE: for this to work fast you have to add index on DB table "location" field.
         $this->onHookShort(Model::HOOK_AFTER_DELETE, function () {
             $path = $this->get('location');
             if ($path && $this->flysystem->fileExists($path)) {
-                $files = (clone $this->getModel())->addCondition('id', '!=',
-                    $this->getId())->addCondition('location', $path);
-                if ($files->tryLoadAny() == null) {
+                $files = (clone $this->getModel())->addCondition(
+                    'id',
+                    '!=',
+                    $this->getId()
+                )->addCondition('location', $path);
+                if ($files->tryLoadAny() === null) {
                     $this->flysystem->delete($path);
                 }
             }
@@ -195,12 +199,17 @@ class File extends Model
      *
      * @return bool True on success
      */
-    public function createThumbnail(string $path): bool
-    {
+    public function createThumbnail(
+        string $path,
+        int $maxWidth = null,
+        int $maxHeight = null,
+        string $format = null
+    ): bool {
         $this->assertIsEntity();
 
-        $maxWidth = $this->thumbnailMaxWidth;
-        $maxHeight = $this->thumbnailMaxHeight;
+        $maxWidth ??= $this->thumbnailMaxWidth;
+        $maxHeight ??= $this->thumbnailMaxHeight;
+        $format ??= $this->thumbnailFormat;
 
         $src = imagecreatefromstring(file_get_contents($path));
         if ($src === false) {
@@ -224,8 +233,8 @@ class File extends Model
 
         $tmp = imagecreatetruecolor($tnWidth, $tnHeight);
 
-        // check if this image is PNG or GIF, then set if Transparent
-        if ($this->thumbnailFormat === 'png' || $this->thumbnailFormat === 'gif') {
+        // check if this image is PNG or GIF, then set it Transparent
+        if ($format === 'png' || $format === 'gif') {
             imagealphablending($tmp, false);
             imagesavealpha($tmp, true);
             imagefilledrectangle($tmp, 0, 0, $tnWidth, $tnHeight, imagecolorallocatealpha($tmp, 255, 255, 255, 127));
@@ -235,7 +244,7 @@ class File extends Model
         // create temporary thumb file
         $thumbFile = tmpfile();
         try {
-            switch ($this->thumbnailFormat) {
+            switch ($format) {
                 case 'gif':
                     imagegif($tmp, $thumbFile);
 
@@ -257,7 +266,7 @@ class File extends Model
             $uri = stream_get_meta_data($thumbFile)['uri'];
 
             // save thumbnail
-            $thumbName = basename($this->get('meta_filename')) . '.thumb.' . $this->thumbnailFormat;
+            $thumbName = basename($this->get('meta_filename')) . '.thumb.' . $format;
             $thumbModel = clone $this->getModel();
             $thumbModel->createThumbnail = false; // do not create thumbnails of thumbnails
             $thumbEntity = $thumbModel->createFromPath($uri, $thumbName);
@@ -281,13 +290,22 @@ class File extends Model
     /**
      * Useful method to clean up all draft files.
      * Can be called as user action or on schedule bases to clean up filestore repository.
+     *
+     * @param int $draftsCleanupDelay Custom drafts cleanup delay in seconds
      */
-    public function cleanupDrafts(): void
+    public function cleanupDrafts(int $draftsCleanupDelay = null): void
     {
-        $this->getPersistence()->atomic(function () {
+        $draftsCleanupDelay ??= $this->draftsCleanupDelay;
+
+        $this->getPersistence()->atomic(function () use ($draftsCleanupDelay) {
             $files = (clone $this)
                 ->addCondition('status', self::STATUS_DRAFT)
-                ->addCondition('created_at', '<', (new \DateTime())->sub(new \DateInterval('PT' . $this->cleanupDraftsDelay . 'S')));
+                ->addCondition(
+                    'created_at',
+                    '<',
+                    (new \DateTime())
+                        ->sub(new \DateInterval('PT' . $draftsCleanupDelay . 'S'))
+                );
 
             foreach ($files as $file) {
                 $file->delete();
