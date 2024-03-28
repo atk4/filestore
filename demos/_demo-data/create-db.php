@@ -40,14 +40,14 @@ $fileModel->addField('meta_image_height', ['type' => 'integer']);
 
 $friendModel = new Model($db, ['table' => 'friend']);
 $friendModel->addField('name', ['required' => true]);
-$friendModel->addField('file');
+$friendModel->addField('file1');
 $friendModel->addField('file2');
 
 (new Migrator($friendModel))->create();
 
-$friendModel->hasOne('file', ['model' => $fileModel, 'theirField' => 'token']);
+$friendModel->hasOne('file1', ['model' => $fileModel, 'theirField' => 'token']);
 $friendModel->hasOne('file2', ['model' => $fileModel, 'theirField' => 'token']);
-(new Migrator($db))->createForeignKey($friendModel->getReference('file'));
+(new Migrator($db))->createForeignKey($friendModel->getReference('file1'));
 (new Migrator($db))->createForeignKey($friendModel->getReference('file2'));
 
 echo 'import complete!' . "\n\n";

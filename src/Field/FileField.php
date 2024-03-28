@@ -88,6 +88,12 @@ class FileField extends Field
 
     protected function importFields(): void
     {
-        $this->fieldFilename = $this->reference->addField($this->fieldNameBase . '_filename', 'meta_filename');
+        $field = $this->getOwner()->getField($this->shortName);
+
+        $this->fieldFilename = $this->reference->addField(
+            $this->fieldNameBase . '_filename',
+            'meta_filename',
+            ['caption' => $field->caption ? $field->caption . ' Filename' : null]
+        );
     }
 }

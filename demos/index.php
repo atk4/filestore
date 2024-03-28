@@ -7,21 +7,25 @@ namespace Atk4\Filestore\Demos;
 use Atk4\Data\Persistence;
 use Atk4\Filestore\Helper;
 use Atk4\Filestore\Model\File;
+use Atk4\Ui\App;
 use Atk4\Ui\Callback;
-use Atk4\Ui\Columns;
 use Atk4\Ui\Crud;
+use Atk4\Ui\Exception;
 use Atk4\Ui\Form;
 use Atk4\Ui\Grid;
 use Atk4\Ui\Header;
 use Atk4\Ui\Js\JsExpression;
+use Atk4\Ui\Layout\Centered;
+use Atk4\Ui\Tabs;
 use Atk4\Ui\View;
 use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 
 require __DIR__ . '/init-autoloader.php';
 
 // init App
-$app = new \Atk4\Ui\App(['title' => 'Filestore Demo']);
-$app->initLayout([\Atk4\Ui\Layout\Centered::class]);
+$app = new App(['title' => 'Filestore Demo']);
+$app->initLayout([Centered::class]);
 
 // init db
 try {
@@ -30,19 +34,22 @@ try {
     $app->db = $db;
     unset($db);
 } catch (\Throwable $e) {
-    throw new \Atk4\Ui\Exception('Database error: ' . $e->getMessage());
+    throw new Exception('Database error: ' . $e->getMessage());
 }
 
 // specify folder where files will be actually stored
-$adapter = new \League\Flysystem\Local\LocalFilesystemAdapter(__DIR__ . '/_demo-data/localfiles');
+$adapter = new LocalFilesystemAdapter(__DIR__ . '/_demo-data/localfiles');
 $filesystem = new Filesystem($adapter);
 
-$columnsLayout = Columns::addTo($app);
+// setup tabs
+// @todo make tab 2 dynamic
+$tabs = Tabs::addTo($app);
+$t1 = $tabs->addTab('Friends');
+$t2 = $tabs->addTab('Filestore Files');
 
 // new friend form
-$c1 = $columnsLayout->addColumn(6);
-Header::addTo($c1, ['Add New Friend']);
-$form = Form::addTo($c1);
+Header::addTo($t1, ['Add New Friend']);
+$form = Form::addTo($t1);
 $form->setModel(
     (new Friend($app->db, [
         'filesystem' => $filesystem,
@@ -55,25 +62,11 @@ $form->onSubmit(static function (Form $form) use ($app) {
     return $app->layout->jsReload();
 });
 
-// list all filestore files
-$c2 = $columnsLayout->addColumn(10);
-Header::addTo($c2, ['All Filestore Files']);
-$gr = Grid::addTo($c2, [
-    'paginator' => false,
-]);
-$files = new File($app->db, ['flysystem' => $filesystem]);
-$gr->menu->addItem('Cleanup Drafts')->on('click', static function () use ($gr, $files) {
-    $files->cleanupDrafts();
-
-    return $gr->jsReload();
-});
-$gr->setModel($files);
-
-View::addTo($app, ['ui' => 'divider']);
+View::addTo($t1, ['ui' => 'divider']);
 
 // CRUD with all Friends records
-Header::addTo($app, ['All Friends']);
-$crud = Crud::addTo($app);
+Header::addTo($t1, ['All Friends']);
+$crud = Crud::addTo($t1);
 $crud->setModel(new Friend($app->db, ['filesystem' => $filesystem]));
 
 // custom actions
@@ -81,7 +74,7 @@ $callbackDownload = Callback::addTo($app);
 $callbackDownload->set(static function () use ($crud) {
     $id = $crud->getApp()->stickyGet('row_id');
     $model = (clone $crud->model);
-    $model_file = File::assertInstanceOf($model->load($id)->ref('file'));
+    $model_file = File::assertInstanceOf($model->load($id)->ref('file1'));
     Helper::download($model_file, $crud->getApp());
 });
 
@@ -97,7 +90,7 @@ $callbackView = Callback::addTo($app);
 $callbackView->set(static function () use ($crud) {
     $id = $crud->getApp()->stickyGet('row_id');
     $model = (clone $crud->model);
-    $model_file = File::assertInstanceOf($model->load($id)->ref('file'));
+    $model_file = File::assertInstanceOf($model->load($id)->ref('file1'));
     Helper::view($model_file, $crud->getApp());
 });
 
@@ -108,3 +101,15 @@ $crud->addActionButton(
         [$callbackView->getJsUrl(), $crud->table->jsRow()->data('id')]
     )
 );
+
+// list all filestore files
+$gr = Grid::addTo($t2, [
+    'paginator' => false,
+]);
+$files = new File($app->db, ['flysystem' => $filesystem]);
+$gr->menu->addItem('Cleanup Drafts')->on('click', static function () use ($gr, $files) {
+    $files->cleanupDrafts();
+
+    return $gr->jsReload();
+});
+$gr->setModel($files);
