@@ -57,7 +57,7 @@ $form->setModel(
 );
 
 $form->onSubmit(static function (Form $form) use ($app) {
-    $form->model->save();
+    $form->entity->save();
 
     return $app->layout->jsReload();
 });
