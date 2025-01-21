@@ -18,6 +18,7 @@ class Friend extends Model
     /** @var Filesystem */
     public $filesystem;
 
+    #[\Override]
     protected function init(): void
     {
         parent::init();

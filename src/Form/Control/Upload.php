@@ -14,6 +14,7 @@ use Atk4\Ui\Js\JsExpressionable;
  */
 class Upload extends \Atk4\Ui\Form\Control\Upload
 {
+    #[\Override]
     protected function init(): void
     {
         parent::init();
@@ -48,6 +49,7 @@ class Upload extends \Atk4\Ui\Form\Control\Upload
         return null;
     }
 
+    #[\Override]
     protected function renderView(): void
     {
         if ($this->entityField->getField()->fieldFilename) { // @phpstan-ignore-line
