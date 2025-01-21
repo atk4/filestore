@@ -142,7 +142,7 @@ class File extends Model
      *
      * @return static
      */
-    public function createFromPath(string $path, string $fileName = null): Model
+    public function createFromPath(string $path, ?string $fileName = null): Model
     {
         $this->assertIsModel();
 
@@ -201,9 +201,9 @@ class File extends Model
      */
     public function createThumbnail(
         string $path,
-        int $maxWidth = null,
-        int $maxHeight = null,
-        string $format = null
+        ?int $maxWidth = null,
+        ?int $maxHeight = null,
+        ?string $format = null
     ): bool {
         $this->assertIsEntity();
 
@@ -293,7 +293,7 @@ class File extends Model
      *
      * @param int $draftsCleanupDelay Custom drafts cleanup delay in seconds
      */
-    public function cleanupDrafts(int $draftsCleanupDelay = null): void
+    public function cleanupDrafts(?int $draftsCleanupDelay = null): void
     {
         $draftsCleanupDelay ??= $this->draftsCleanupDelay;
 
