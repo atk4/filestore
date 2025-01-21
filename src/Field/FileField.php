@@ -33,6 +33,7 @@ class FileField extends Field
     /** @var Field */
     public $fieldFilename;
 
+    #[\Override]
     protected function init(): void
     {
         $this->_init();

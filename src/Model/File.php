@@ -47,6 +47,7 @@ class File extends Model
     /** Draft files deleting delay in seconds, to prevent cleaning up unsaved forms */
     protected int $draftsCleanupDelay = 2 * 24 * 3600;
 
+    #[\Override]
     protected function init(): void
     {
         parent::init();
