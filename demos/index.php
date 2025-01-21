@@ -50,7 +50,7 @@ $t2 = $tabs->addTab('Filestore Files');
 // new friend form
 Header::addTo($t1, ['Add New Friend']);
 $form = Form::addTo($t1);
-$form->setModel(
+$form->setEntity(
     (new Friend($app->db, [
         'filesystem' => $filesystem,
     ]))->createEntity()
