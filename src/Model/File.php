@@ -109,7 +109,7 @@ class File extends Model
         $this->onHookShort(Model::HOOK_AFTER_DELETE, function () {
             $path = $this->get('location');
             if ($path && $this->flysystem->fileExists($path)) {
-                $files = (clone $this->getModel())->addCondition(
+                $files = (new self($this->getModel()->getPersistence()))->addCondition(
                     'id',
                     '!=',
                     $this->getId()
